@@ -103,11 +103,9 @@ class _SignUpScreen extends State<SignUpScreen> {
     Navigator.pushReplacementNamed(context, SignInScreen.name);
   }
 
-
-  void _onTapSignIn(){
+  void _onTapSignIn() {
     Navigator.pushReplacementNamed(context, SignInScreen.name);
   }
-
 
   void _onTapForgetPassword() {
     Navigator.pushNamed(context, ForgetPasswordEmail.name);

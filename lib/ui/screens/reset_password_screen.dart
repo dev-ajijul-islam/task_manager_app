@@ -10,12 +10,10 @@ class ResetPasswordScreen extends StatefulWidget {
   static String name = "reset-password-screen";
 
   @override
-  State<ResetPasswordScreen> createState() =>
-      _ResetPasswordScreen();
+  State<ResetPasswordScreen> createState() => _ResetPasswordScreen();
 }
 
-class _ResetPasswordScreen
-    extends State<ResetPasswordScreen> {
+class _ResetPasswordScreen extends State<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,10 +26,7 @@ class _ResetPasswordScreen
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  "PIN Verification",
-                  style: TextTheme.of(context).bodyLarge,
-                ),
+                Text("Set Password", style: TextTheme.of(context).bodyLarge),
                 Text(
                   "Minimum length password 8 character with Latter and number combination ",
                   style: TextTheme.of(
@@ -39,13 +34,10 @@ class _ResetPasswordScreen
                   ).bodyMedium?.copyWith(color: Colors.grey),
                 ),
                 TextFormField(
-                  decoration: InputDecoration(
-                    hintText: "Password"
-                  ),
-                ),  TextFormField(
-                  decoration: InputDecoration(
-                    hintText: "Confirm Password"
-                  ),
+                  decoration: InputDecoration(hintText: "Password"),
+                ),
+                TextFormField(
+                  decoration: InputDecoration(hintText: "Confirm Password"),
                 ),
                 SizedBox(height: 5),
                 FilledButton(
@@ -85,7 +77,11 @@ class _ResetPasswordScreen
   }
 
   void _onTapConfirmButton() {
-    Navigator.pushReplacementNamed(context, MainLayoutScreen.name);
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      MainLayoutScreen.name,
+      (predicate) => false,
+    );
   }
 
   void _onTapSignIn() {

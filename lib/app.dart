@@ -20,7 +20,10 @@ class _TaskManagerState extends State<TaskManager> {
     return MaterialApp(
       theme: ThemeData(
         //--------------Color Scheme--------------------
-        colorScheme: ColorScheme.light(primary: Colors.green.shade500),
+        colorScheme: ColorScheme.light(
+          primary: Colors.green.shade500,
+          secondary: Colors.black54
+        ),
         //--------------input theme---------------------
         inputDecorationTheme: InputDecorationThemeData(
           border: OutlineInputBorder(
@@ -68,6 +71,10 @@ class _TaskManagerState extends State<TaskManager> {
             fontWeight: FontWeight.w600,
             color: Colors.black87,
           ),
+          bodyMedium: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w400
+          )
         ),
       ),
 
@@ -75,11 +82,12 @@ class _TaskManagerState extends State<TaskManager> {
       routes: {
         SplashScreen.name: (_) => SplashScreen(),
         MainLayoutScreen.name: (_) => MainLayoutScreen(),
-        ForgetPasswordEmail.name : (_)=> ForgetPasswordEmail(),
-        SignInScreen.name : (_)=> SignInScreen(),
-        ForgetPasswordOtpVerificationScreen.name : (_)=> ForgetPasswordOtpVerificationScreen(),
-        ResetPasswordScreen.name : (_)=> ResetPasswordScreen(),
-        SignUpScreen.name : (_)=> SignUpScreen()
+        ForgetPasswordEmail.name: (_) => ForgetPasswordEmail(),
+        SignInScreen.name: (_) => SignInScreen(),
+        ForgetPasswordOtpVerificationScreen.name: (_) =>
+            ForgetPasswordOtpVerificationScreen(),
+        ResetPasswordScreen.name: (_) => ResetPasswordScreen(),
+        SignUpScreen.name: (_) => SignUpScreen(),
       },
       initialRoute: SplashScreen.name,
     );
