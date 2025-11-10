@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task_managment_app/ui/screens/forget_password_email.dart';
+import 'package:task_managment_app/ui/screens/forget_password_otp_verification_screen.dart';
 import 'package:task_managment_app/ui/screens/main_layout_screen.dart';
 import 'package:task_managment_app/ui/screens/sign_in_screen.dart';
 import 'package:task_managment_app/ui/screens/splash_screen.dart';
@@ -73,7 +74,8 @@ class _TaskManagerState extends State<TaskManager> {
         SplashScreen.name: (_) => SplashScreen(),
         MainLayoutScreen.name: (_) => MainLayoutScreen(),
         ForgetPasswordEmail.name : (_)=> ForgetPasswordEmail(),
-        SignInScreen.name : (_)=> SignInScreen()
+        SignInScreen.name : (_)=> SignInScreen(),
+        ForgetPasswordOtpVerificationScreen.name : (_)=> ForgetPasswordOtpVerificationScreen()
       },
       initialRoute: SplashScreen.name,
     );
