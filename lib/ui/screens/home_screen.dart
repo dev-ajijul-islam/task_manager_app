@@ -21,9 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
               TextSpan(
                 text: "Sign In",
                 style: TextStyle(color: Colors.green.shade700),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () {
-                  },
+                recognizer: TapGestureRecognizer()..onTap = () {},
               ),
             ],
           ),

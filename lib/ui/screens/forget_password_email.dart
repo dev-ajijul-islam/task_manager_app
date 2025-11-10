@@ -1,19 +1,18 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:task_managment_app/ui/screens/forget_password_email.dart';
-import 'package:task_managment_app/ui/screens/main_layout_screen.dart';
+import 'package:task_managment_app/ui/screens/sign_in_screen.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
 
-class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key});
+class ForgetPasswordEmail extends StatefulWidget {
+  const ForgetPasswordEmail({super.key});
 
-  static String name = "sign-in-screen";
+  static String name = "forget-password-email";
 
   @override
-  State<SignInScreen> createState() => _SignInScreenState();
+  State<ForgetPasswordEmail> createState() => _ForgetPasswordEmailState();
 }
 
-class _SignInScreenState extends State<SignInScreen> {
+class _ForgetPasswordEmailState extends State<ForgetPasswordEmail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,22 +26,22 @@ class _SignInScreenState extends State<SignInScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Get started With",
+                  "Your Email Address",
                   style: TextTheme.of(context).bodyLarge,
                 ),
-                SizedBox(height: 5),
+                Text(
+                  "A 6 digit pin code will sent to Your Email Address",
+                  style: TextTheme.of(context).bodyMedium?.copyWith(
+                    color: Colors.grey
+                  ),
+                ),
                 TextFormField(
                   style: TextStyle(fontSize: 14),
                   decoration: InputDecoration(hintText: "Email"),
                 ),
-                TextFormField(
-                  obscureText: true,
-                  style: TextStyle(fontSize: 14),
-                  decoration: InputDecoration(hintText: "Password"),
-                ),
                 SizedBox(height: 5),
                 FilledButton(
-                  onPressed: _onTapSignINButton,
+                  onPressed: _onTapSubmitEmailButton,
                   child: Icon(Icons.arrow_circle_right_outlined, size: 25),
                 ),
                 SizedBox(height: 10),
@@ -50,24 +49,15 @@ class _SignInScreenState extends State<SignInScreen> {
                   child: Column(
                     spacing: 5,
                     children: [
-                      GestureDetector(
-                        onTap: _onTapForgetPassword,
-                        child: Text(
-                          "Forgot password ?",
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ),
                       RichText(
                         text: TextSpan(
                           style: TextStyle(color: Colors.black87),
-                          text: "Don't have an account? ",
+                          text: "have an account? ",
                           children: [
                             TextSpan(
-                              recognizer: TapGestureRecognizer()..onTap = () {},
-                              text: "Sign up",
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = _onTapSignIn,
+                              text: "Sign in",
                               style: TextStyle(
                                 color: Theme.of(context).colorScheme.primary,
                               ),
@@ -86,11 +76,9 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  void _onTapSignINButton(){
-    Navigator.pushReplacementNamed(context, MainLayoutScreen.name);
-  }
+  void _onTapSubmitEmailButton() {}
 
-  void _onTapForgetPassword(){
-    Navigator.pushNamed(context, ForgetPasswordEmail.name);
+  void _onTapSignIn() {
+    Navigator.pushReplacementNamed(context, SignInScreen.name);
   }
 }
