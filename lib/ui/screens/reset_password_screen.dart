@@ -1,22 +1,21 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:task_managment_app/ui/screens/reset_password_screen.dart';
+import 'package:task_managment_app/ui/screens/main_layout_screen.dart';
 import 'package:task_managment_app/ui/screens/sign_in_screen.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
 
-class ForgetPasswordOtpVerificationScreen extends StatefulWidget {
-  const ForgetPasswordOtpVerificationScreen({super.key});
+class ResetPasswordScreen extends StatefulWidget {
+  const ResetPasswordScreen({super.key});
 
-  static String name = "Forget-password-otp-verification-screen";
+  static String name = "reset-password-screen";
 
   @override
-  State<ForgetPasswordOtpVerificationScreen> createState() =>
-      _ForgetPasswordOtpVerificationScreen();
+  State<ResetPasswordScreen> createState() =>
+      _ResetPasswordScreen();
 }
 
-class _ForgetPasswordOtpVerificationScreen
-    extends State<ForgetPasswordOtpVerificationScreen> {
+class _ResetPasswordScreen
+    extends State<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,35 +33,24 @@ class _ForgetPasswordOtpVerificationScreen
                   style: TextTheme.of(context).bodyLarge,
                 ),
                 Text(
-                  "A 6 digit pin code will sent to Your Email Address",
+                  "Minimum length password 8 character with Latter and number combination ",
                   style: TextTheme.of(
                     context,
                   ).bodyMedium?.copyWith(color: Colors.grey),
                 ),
-                PinCodeTextField(
-                  keyboardType: TextInputType.number,
-                  length: 6,
-                  obscureText: false,
-                  animationType: AnimationType.fade,
-                  pinTheme: PinTheme(
-                    shape: PinCodeFieldShape.box,
-                    borderRadius: BorderRadius.circular(5),
-                    fieldHeight: 50,
-                    fieldWidth: 40,
-                    activeFillColor: Colors.white,
-                    activeColor: Colors.white,
-                    selectedFillColor: Colors.white,
-                    inactiveFillColor: Colors.white,
+                TextFormField(
+                  decoration: InputDecoration(
+                    hintText: "Password"
                   ),
-                  animationDuration: Duration(milliseconds: 300),
-                  backgroundColor: Colors.transparent,
-                  enableActiveFill: true,
-                  appContext: context,
+                ),  TextFormField(
+                  decoration: InputDecoration(
+                    hintText: "Confirm Password"
+                  ),
                 ),
                 SizedBox(height: 5),
                 FilledButton(
-                  onPressed: _onTapSubmitVerifyButton,
-                  child: Text("Verify"),
+                  onPressed: _onTapConfirmButton,
+                  child: Text("Confirm"),
                 ),
                 SizedBox(height: 10),
                 Center(
@@ -96,8 +84,8 @@ class _ForgetPasswordOtpVerificationScreen
     );
   }
 
-  void _onTapSubmitVerifyButton() {
-    Navigator.pushNamed(context, ResetPasswordScreen.name);
+  void _onTapConfirmButton() {
+    Navigator.pushReplacementNamed(context, MainLayoutScreen.name);
   }
 
   void _onTapSignIn() {

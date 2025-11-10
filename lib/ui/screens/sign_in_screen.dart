@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:task_managment_app/ui/screens/forget_password_email.dart';
 import 'package:task_managment_app/ui/screens/main_layout_screen.dart';
+import 'package:task_managment_app/ui/screens/sign_up_screen.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -66,7 +67,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           text: "Don't have an account? ",
                           children: [
                             TextSpan(
-                              recognizer: TapGestureRecognizer()..onTap = () {},
+                              recognizer: TapGestureRecognizer()..onTap = _onTapSignUp,
                               text: "Sign up",
                               style: TextStyle(
                                 color: Theme.of(context).colorScheme.primary,
@@ -90,7 +91,12 @@ class _SignInScreenState extends State<SignInScreen> {
     Navigator.pushReplacementNamed(context, MainLayoutScreen.name);
   }
 
+
+  void _onTapSignUp(){
+    Navigator.pushNamed(context, SignUpScreen.name);
+  }
   void _onTapForgetPassword(){
     Navigator.pushNamed(context, ForgetPasswordEmail.name);
   }
+
 }
