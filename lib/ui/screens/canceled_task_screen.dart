@@ -1,45 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:task_managment_app/ui/screens/add_new_task_screen.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
 import 'package:task_managment_app/ui/widgets/task_card.dart';
 
-class NewTaskScreen extends StatefulWidget {
-  const NewTaskScreen({super.key});
+class CanceledTaskScreen extends StatelessWidget {
+  const CanceledTaskScreen({super.key});
 
-  static String name = "neq-task-screen";
-
-  @override
-  State<NewTaskScreen> createState() => _NewTaskScreenState();
-}
-
-class _NewTaskScreenState extends State<NewTaskScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: _onTapAddTaskButton,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
-        child: Icon(Icons.add),
-      ),
+
       body: ScreenBackground(
         child: Center(
           child: ListView(
             padding: EdgeInsets.all(10),
             children: [
-              SizedBox(
-                height: 70,
-                child: GridView.count(
-                  childAspectRatio: 1.4,
-                  crossAxisCount: 4,
-                  crossAxisSpacing: 5,
-                  children: [
-                    buildTaskSummary(context),
-                    buildTaskSummary(context),
-                    buildTaskSummary(context),
-                    buildTaskSummary(context),
-                  ],
-                ),
-              ),
               TaskCard(),
               TaskCard(),
               TaskCard(),
@@ -57,6 +31,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
 
   Container buildTaskSummary(BuildContext context) {
     return Container(
+      width: MediaQuery.of(context).size.width / 3.5,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
@@ -78,9 +53,5 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
         ),
       ),
     );
-  }
-
-  void _onTapAddTaskButton(){
-    Navigator.pushNamed(context, AddNewTaskScreen.name);
   }
 }
