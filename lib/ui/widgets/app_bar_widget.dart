@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:task_managment_app/ui/controllers/auth_controller.dart';
+import 'package:task_managment_app/ui/screens/sign_in_screen.dart';
 import 'package:task_managment_app/ui/screens/update_profile_screen.dart';
 
 class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
@@ -9,7 +11,7 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       foregroundColor: Colors.white,
       title: GestureDetector(
-        onTap: (){
+        onTap: () {
           Navigator.pushNamed(context, UpdateProfileScreen.name);
         },
         child: Row(
@@ -40,6 +42,12 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       backgroundColor: ColorScheme.of(context).primary,
+      actions: [
+        IconButton(onPressed: () {
+          Navigator.pushNamedAndRemoveUntil(context, SignInScreen.name, (route) => false,);
+          AuthController.clearUserData();
+        }, icon: Icon(Icons.logout_outlined)),
+      ],
     );
   }
 

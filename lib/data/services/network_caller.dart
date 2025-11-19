@@ -4,7 +4,7 @@ import 'package:http/http.dart';
 
 class NetworkCaller {
   //get request
-  Future<NetworkResponse> getRequest(String uri) async {
+  static Future<NetworkResponse> getRequest(String uri) async {
     Uri url = Uri.parse(uri);
 
     _logRequest(uri);
@@ -39,7 +39,7 @@ class NetworkCaller {
   }
 
   //post request
-  Future<NetworkResponse> postRequest(
+  static Future<NetworkResponse> postRequest(
     String uri, {
     Map<String, dynamic>? body,
   }) async {
@@ -62,7 +62,7 @@ class NetworkCaller {
         return NetworkResponse(
           isSuccess: true,
           statusCode: response.statusCode,
-          body: response.body,
+          body: decodedData,
         );
       } else {
         return NetworkResponse(
@@ -81,12 +81,12 @@ class NetworkCaller {
   }
 
   //log request
-  _logRequest(String url) {
+  static _logRequest(String url) {
     debugPrint("Requested url : $url");
   }
 
   //log response
-  _logResponse(String url, {Response? response}) {
+  static _logResponse(String url, {Response? response}) {
     debugPrint(
       "Requested url : $url \n"
       "StatusCode : ${response?.statusCode}\n"

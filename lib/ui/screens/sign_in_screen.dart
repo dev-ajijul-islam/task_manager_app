@@ -1,7 +1,9 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:task_managment_app/data/models/user_model.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
+import 'package:task_managment_app/ui/controllers/auth_controller.dart';
 import 'package:task_managment_app/ui/screens/forget_password_email.dart';
 import 'package:task_managment_app/ui/screens/main_layout_screen.dart';
 import 'package:task_managment_app/ui/screens/sign_up_screen.dart';
@@ -134,15 +136,24 @@ class _SignInScreenState extends State<SignInScreen> {
         "password": _passwordTEController.text,
       };
 
-      NetworkResponse response = await NetworkCaller().postRequest(
+      NetworkResponse response = await NetworkCaller.postRequest(
         Url.signInUrl,
         body: requestedBody,
       );
 
       if (response.isSuccess) {
+        UserModel user = UserModel.fromJson(response.body["data"]);
+        String token = response.body["token"];
+
+        await AuthController.saveUerData(token, user);
+
         snackbarMessgae(context, "Sign in success");
         _clearForm();
-        Navigator.pushReplacementNamed(context, MainLayoutScreen.name);
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          MainLayoutScreen.name,
+          (predicated) => false,
+        );
       } else {
         snackbarMessgae(context, response.errorMessage.toString());
       }
