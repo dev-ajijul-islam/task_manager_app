@@ -1,9 +1,13 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:task_managment_app/data/services/network_caller.dart';
 import 'package:task_managment_app/ui/screens/forget_password_email.dart';
 import 'package:task_managment_app/ui/screens/main_layout_screen.dart';
 import 'package:task_managment_app/ui/screens/sign_up_screen.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
+import 'package:task_managment_app/ui/widgets/snackbar_message.dart';
+import 'package:task_managment_app/utils/url.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -15,6 +19,13 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  final TextEditingController _emailTEController = TextEditingController();
+  final TextEditingController _passwordTEController = TextEditingController();
+
+  bool signInProgress = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,64 +33,90 @@ class _SignInScreenState extends State<SignInScreen> {
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(25),
-            child: Column(
-              spacing: 10,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Get started With",
-                  style: TextTheme.of(context).bodyLarge,
-                ),
-                SizedBox(height: 5),
-                TextFormField(
-                  style: TextStyle(fontSize: 14),
-                  decoration: InputDecoration(hintText: "Email"),
-                ),
-                TextFormField(
-                  obscureText: true,
-                  style: TextStyle(fontSize: 14),
-                  decoration: InputDecoration(hintText: "Password"),
-                ),
-                SizedBox(height: 5),
-                FilledButton(
-                  onPressed: _onTapSignINButton,
-                  child: Icon(Icons.arrow_circle_right_outlined, size: 25),
-                ),
-                SizedBox(height: 10),
-                Center(
-                  child: Column(
-                    spacing: 5,
-                    children: [
-                      GestureDetector(
-                        onTap: _onTapForgetPassword,
-                        child: Text(
-                          "Forgot password ?",
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.w400,
+            child: Form(
+              key: _formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              child: Column(
+                spacing: 10,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Get started With",
+                    style: TextTheme.of(context).bodyLarge,
+                  ),
+                  SizedBox(height: 5),
+                  TextFormField(
+                    validator: (String? value) {
+                      if (value?.trim().isEmpty ?? true) {
+                        return "Enter email";
+                      }
+                      if (EmailValidator.validate(value!) == false) {
+                        return "Enter valid email";
+                      }
+                      return null;
+                    },
+                    controller: _emailTEController,
+                    style: TextStyle(fontSize: 14),
+                    decoration: InputDecoration(hintText: "Email"),
+                  ),
+                  TextFormField(
+                    validator: (String? value) {
+                      if (value?.trim().isEmpty ?? true) {
+                        return "Enter first name";
+                      }
+                      return null;
+                    },
+                    controller: _passwordTEController,
+                    obscureText: true,
+                    style: TextStyle(fontSize: 14),
+                    decoration: InputDecoration(hintText: "Password"),
+                  ),
+                  SizedBox(height: 5),
+                  Visibility(
+                    visible: signInProgress == false,
+                    replacement: Center(child: CircularProgressIndicator()),
+                    child: FilledButton(
+                      onPressed: _onTapSignINButton,
+                      child: Icon(Icons.arrow_circle_right_outlined, size: 25),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Center(
+                    child: Column(
+                      spacing: 5,
+                      children: [
+                        GestureDetector(
+                          onTap: _onTapForgetPassword,
+                          child: Text(
+                            "Forgot password ?",
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
                         ),
-                      ),
-                      RichText(
-                        text: TextSpan(
-                          style: TextStyle(color: Colors.black87),
-                          text: "Don't have an account? ",
-                          children: [
-                            TextSpan(
-                              recognizer: TapGestureRecognizer()..onTap = _onTapSignUp,
-                              text: "Sign up",
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.primary,
+                        RichText(
+                          text: TextSpan(
+                            style: TextStyle(color: Colors.black87),
+                            text: "Don't have an account? ",
+                            children: [
+                              TextSpan(
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = _onTapSignUp,
+                                text: "Sign up",
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -87,16 +124,51 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  void _onTapSignINButton(){
-    Navigator.pushReplacementNamed(context, MainLayoutScreen.name);
+  void _onTapSignINButton() async {
+    setState(() {
+      signInProgress = true;
+    });
+    if (_formKey.currentState!.validate()) {
+      final Map<String, dynamic> requestedBody = {
+        "email": _emailTEController.text.trim(),
+        "password": _passwordTEController.text,
+      };
+
+      NetworkResponse response = await NetworkCaller().postRequest(
+        Url.signInUrl,
+        body: requestedBody,
+      );
+
+      if (response.isSuccess) {
+        snackbarMessgae(context, "Sign in success");
+        _clearForm();
+        Navigator.pushReplacementNamed(context, MainLayoutScreen.name);
+      } else {
+        snackbarMessgae(context, response.errorMessage.toString());
+      }
+    }
+    setState(() {
+      signInProgress = false;
+    });
   }
 
-
-  void _onTapSignUp(){
+  void _onTapSignUp() {
     Navigator.pushNamed(context, SignUpScreen.name);
   }
-  void _onTapForgetPassword(){
+
+  void _onTapForgetPassword() {
     Navigator.pushNamed(context, ForgetPasswordEmail.name);
   }
 
+  void _clearForm() {
+    _emailTEController.clear();
+    _passwordTEController.clear();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _emailTEController.dispose();
+    _passwordTEController.dispose();
+  }
 }

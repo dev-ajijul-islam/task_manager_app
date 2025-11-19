@@ -14,18 +14,20 @@ class TaskCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: ListTile(
         tileColor: colorScheme.surface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        title: Text(
-          "Title of Task 1",
-          style: textTheme.titleMedium,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 15,
+          vertical: 10,
         ),
+        title: Text("Title of Task 1", style: textTheme.titleMedium),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
             Text(
               "It is a long established fact that a reader will be distracted by the readable",
-              style: textTheme.titleSmall?.copyWith(color: colorScheme.secondary),
+              style: textTheme.titleSmall?.copyWith(
+                color: colorScheme.secondary,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
