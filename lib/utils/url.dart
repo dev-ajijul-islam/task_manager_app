@@ -4,4 +4,5 @@ class Url{
    static final String signInUrl = "$_baseUrl/Login";
    static final String createTaskUrl = "$_baseUrl/createTask";
    static final String newTaskUrl = "$_baseUrl/listTaskByStatus/New";
+   static final String taskCountUrl = "$_baseUrl/taskStatusCount";
 }

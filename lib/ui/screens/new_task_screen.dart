@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_managment_app/data/models/task_count_model.dart';
 import 'package:task_managment_app/data/models/task_model.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
 import 'package:task_managment_app/ui/screens/add_new_task_screen.dart';
@@ -19,9 +20,11 @@ class NewTaskScreen extends StatefulWidget {
 class _NewTaskScreenState extends State<NewTaskScreen> {
   bool isLoadingNewTasks = false;
   List<TaskModel> taskList = [];
+  List<TaskCountModel> taskCountList = [];
 
   @override
   void initState() {
+    getTaskCounts();
     getNewTasks();
     super.initState();
   }
@@ -41,16 +44,21 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
             children: [
               SizedBox(
                 height: 70,
-                child: GridView.count(
-                  childAspectRatio: 1.4,
-                  crossAxisCount: 4,
-                  crossAxisSpacing: 5,
-                  children: [
-                    buildTaskSummary(context),
-                    buildTaskSummary(context),
-                    buildTaskSummary(context),
-                    buildTaskSummary(context),
-                  ],
+                child: Visibility(
+                  visible: isLoadingNewTasks == false,
+                  replacement: CenteredCircularProgrress(),
+                  child: ListView.separated(
+                    separatorBuilder: (context,index){
+                      return SizedBox(width: 5,);
+                    },
+                    scrollDirection: Axis.horizontal,
+                    itemCount: taskCountList.length,
+                    itemBuilder: (context, index) {
+                      TaskCountModel taskCount = taskCountList[index];
+
+                      return buildTaskSummary(context,taskCount);
+                    },
+                  ),
                 ),
               ),
               Visibility(
@@ -59,7 +67,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                 child: SizedBox(
                   height: MediaQuery.of(context).size.height - 230,
                   child: RefreshIndicator(
-                    onRefresh: ()async{
+                    onRefresh: () async {
                       getNewTasks();
                     },
                     child: ListView.builder(
@@ -79,8 +87,9 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     );
   }
 
-  Container buildTaskSummary(BuildContext context) {
+  Container buildTaskSummary(BuildContext context, TaskCountModel taskCount) {
     return Container(
+      width: MediaQuery.of(context).size.width/4 -5,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
@@ -88,15 +97,15 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              "09",
+              taskCount.sum.toString(),
               style: TextTheme.of(
                 context,
               ).bodyMedium?.copyWith(fontWeight: FontWeight.w800),
             ),
-            Text("New task", style: TextTheme.of(context).bodySmall),
+            Text(taskCount.id, style: TextTheme.of(context).bodySmall),
           ],
         ),
       ),
@@ -109,7 +118,6 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     });
 
     NetworkResponse response = await NetworkCaller.getRequest(Url.newTaskUrl);
-
     if (response.isSuccess) {
       List<TaskModel> list = [];
 
@@ -117,11 +125,29 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
         list.add(TaskModel.fromJson(task));
       }
 
-      setState(() {
-        taskList = list;
-      });
+      taskList = list;
     }
 
+    setState(() {
+      isLoadingNewTasks = false;
+    });
+  }
+
+  Future<void> getTaskCounts() async {
+    isLoadingNewTasks = false;
+
+    NetworkResponse response = await NetworkCaller.getRequest(Url.taskCountUrl);
+
+    if (response.isSuccess) {
+      List<TaskCountModel> list = [];
+      for (Map<String, dynamic> json in response.body["data"]) {
+        list.add(TaskCountModel.fromJson(json));
+      }
+
+      setState(() {
+        taskCountList = list;
+      });
+    }
     setState(() {
       isLoadingNewTasks = false;
     });
