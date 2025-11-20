@@ -48,7 +48,7 @@ class TaskCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   backgroundColor: colorScheme.primary.withOpacity(0.7),
                   label: Text(
-                    "New",
+                    task.status,
                     style: textTheme.bodySmall?.copyWith(color: Colors.white),
                   ),
                   shape: RoundedRectangleBorder(
