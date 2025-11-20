@@ -14,14 +14,7 @@ class CanceledTaskScreen extends StatelessWidget {
           child: ListView(
             padding: EdgeInsets.all(10),
             children: [
-              TaskCard(),
-              TaskCard(),
-              TaskCard(),
-              TaskCard(),
-              TaskCard(),
-              TaskCard(),
-              TaskCard(),
-              TaskCard(),
+
             ],
           ),
         ),

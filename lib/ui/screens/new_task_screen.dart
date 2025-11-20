@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:task_managment_app/data/models/task_model.dart';
+import 'package:task_managment_app/data/services/network_caller.dart';
 import 'package:task_managment_app/ui/screens/add_new_task_screen.dart';
+import 'package:task_managment_app/ui/widgets/centered_circular_progrress.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
 import 'package:task_managment_app/ui/widgets/task_card.dart';
+import 'package:task_managment_app/utils/url.dart';
 
 class NewTaskScreen extends StatefulWidget {
   const NewTaskScreen({super.key});
@@ -13,6 +17,15 @@ class NewTaskScreen extends StatefulWidget {
 }
 
 class _NewTaskScreenState extends State<NewTaskScreen> {
+  bool isLoadingNewTasks = false;
+  List<TaskModel> taskList = [];
+
+  @override
+  void initState() {
+    getNewTasks();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,14 +53,25 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                   ],
                 ),
               ),
-              TaskCard(),
-              TaskCard(),
-              TaskCard(),
-              TaskCard(),
-              TaskCard(),
-              TaskCard(),
-              TaskCard(),
-              TaskCard(),
+              Visibility(
+                visible: isLoadingNewTasks == false,
+                replacement: CenteredCircularProgrress(),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height - 230,
+                  child: RefreshIndicator(
+                    onRefresh: ()async{
+                      getNewTasks();
+                    },
+                    child: ListView.builder(
+                      itemCount: taskList.length,
+                      itemBuilder: (context, index) {
+                        TaskModel task = taskList[index];
+                        return TaskCard(task: task);
+                      },
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -73,14 +97,37 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
               ).bodyMedium?.copyWith(fontWeight: FontWeight.w800),
             ),
             Text("New task", style: TextTheme.of(context).bodySmall),
-
           ],
         ),
       ),
     );
   }
 
-  void _onTapAddTaskButton(){
+  Future<void> getNewTasks() async {
+    setState(() {
+      isLoadingNewTasks = true;
+    });
+
+    NetworkResponse response = await NetworkCaller.getRequest(Url.newTaskUrl);
+
+    if (response.isSuccess) {
+      List<TaskModel> list = [];
+
+      for (Map<String, dynamic> task in response.body["data"]) {
+        list.add(TaskModel.fromJson(task));
+      }
+
+      setState(() {
+        taskList = list;
+      });
+    }
+
+    setState(() {
+      isLoadingNewTasks = false;
+    });
+  }
+
+  void _onTapAddTaskButton() {
     Navigator.pushNamed(context, AddNewTaskScreen.name);
   }
 }

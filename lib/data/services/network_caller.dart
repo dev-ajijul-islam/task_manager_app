@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
+import 'package:task_managment_app/ui/controllers/auth_controller.dart';
 
 class NetworkCaller {
   //get request
@@ -10,7 +11,9 @@ class NetworkCaller {
     _logRequest(uri);
 
     try {
-      Response response = await get(url);
+      Response response = await get(url,headers: {
+        "token": AuthController.accessToken ?? "",
+      });
 
       _logResponse(uri, response: response);
 
@@ -26,7 +29,7 @@ class NetworkCaller {
         return NetworkResponse(
           isSuccess: false,
           statusCode: response.statusCode,
-          errorMessage: decodedData.data
+          errorMessage: decodedData.data,
         );
       }
     } catch (e) {
@@ -51,12 +54,15 @@ class NetworkCaller {
       Response response = await post(
         url,
         body: jsonEncode(body),
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          "Content-Type": "application/json",
+          "token": AuthController.accessToken ?? "",
+        },
       );
 
       _logResponse(uri, response: response);
 
-      final  decodedData = jsonDecode(response.body);
+      final decodedData = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
         return NetworkResponse(

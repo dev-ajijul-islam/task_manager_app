@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:task_managment_app/data/models/task_model.dart';
 
 class TaskCard extends StatelessWidget {
-  const TaskCard({super.key});
+  final TaskModel task;
+  const TaskCard({super.key,  required this.task});
 
   @override
   Widget build(BuildContext context) {
@@ -18,20 +20,20 @@ class TaskCard extends StatelessWidget {
           horizontal: 15,
           vertical: 10,
         ),
-        title: Text("Title of Task 1", style: textTheme.titleMedium),
+        title: Text(task.title, style: textTheme.titleMedium),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
             Text(
-              "It is a long established fact that a reader will be distracted by the readable",
+              task.description,
               style: textTheme.titleSmall?.copyWith(
                 color: colorScheme.secondary,
               ),
             ),
             const SizedBox(height: 4),
             Text(
-              "02-02-2026",
+              task.createdDate,
               style: textTheme.titleSmall?.copyWith(
                 color: Colors.black54,
                 fontWeight: FontWeight.w700,
