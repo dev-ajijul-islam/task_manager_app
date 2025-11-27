@@ -19,7 +19,7 @@ class _ProgressingTaskScreenState extends State<ProgressingTaskScreen> {
 
   @override
   void initState() {
-    getTCompletedTasks();
+    getProgessTask();
     super.initState();
   }
 
@@ -29,7 +29,9 @@ class _ProgressingTaskScreenState extends State<ProgressingTaskScreen> {
       body: ScreenBackground(
         child: Center(
           child: RefreshIndicator(
-            onRefresh: () async {},
+            onRefresh: () async {
+              getProgessTask();
+            },
             child: Visibility(
               visible: isLoadingTask == false,
               replacement: CenteredCircularProgrress(),
@@ -48,7 +50,7 @@ class _ProgressingTaskScreenState extends State<ProgressingTaskScreen> {
     );
   }
 
-  Future<void> getTCompletedTasks() async {
+  Future<void> getProgessTask() async {
     isLoadingTask = true;
     setState(() {});
     NetworkResponse response = await NetworkCaller.getRequest(

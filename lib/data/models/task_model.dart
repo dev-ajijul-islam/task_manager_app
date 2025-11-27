@@ -1,6 +1,5 @@
 import 'package:intl/intl.dart';
 
-
 class TaskModel {
   String id;
   String title;
@@ -26,4 +25,3 @@ class TaskModel {
     );
   }
 }
-

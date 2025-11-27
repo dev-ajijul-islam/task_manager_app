@@ -19,7 +19,7 @@ class _CanceledTaskScreenState extends State<CanceledTaskScreen> {
 
   @override
   void initState() {
-    getTCompletedTasks();
+    getCanceledTasks();
     super.initState();
   }
 
@@ -29,7 +29,9 @@ class _CanceledTaskScreenState extends State<CanceledTaskScreen> {
       body: ScreenBackground(
         child: Center(
           child: RefreshIndicator(
-            onRefresh: () async {},
+            onRefresh: () async {
+              getCanceledTasks();
+            },
             child: Visibility(
               visible: isLoadingTask == false,
               replacement: CenteredCircularProgrress(),
@@ -48,7 +50,7 @@ class _CanceledTaskScreenState extends State<CanceledTaskScreen> {
     );
   }
 
-  Future<void> getTCompletedTasks() async {
+  Future<void> getCanceledTasks() async {
     isLoadingTask = true;
     setState(() {});
     NetworkResponse response = await NetworkCaller.getRequest(

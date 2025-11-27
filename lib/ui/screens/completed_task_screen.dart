@@ -19,7 +19,7 @@ class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
 
   @override
   void initState() {
-    getTCompletedTasks();
+    getCompletedTasks();
     super.initState();
   }
 
@@ -29,14 +29,16 @@ class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
       body: ScreenBackground(
         child: Center(
           child: RefreshIndicator(
-            onRefresh: () async {},
+            onRefresh: () async {
+              getCompletedTasks();
+            },
             child: Visibility(
               visible: isLoadingTask == false,
               replacement: CenteredCircularProgrress(),
               child: ListView.builder(
                 itemCount: taskList.length,
                 padding: EdgeInsets.all(10),
-                itemBuilder: (context,index){
+                itemBuilder: (context, index) {
                   TaskModel task = taskList[index];
                   return TaskCard(task: task);
                 },
@@ -48,7 +50,7 @@ class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
     );
   }
 
-  Future<void> getTCompletedTasks() async {
+  Future<void> getCompletedTasks() async {
     isLoadingTask = true;
     setState(() {});
     NetworkResponse response = await NetworkCaller.getRequest(

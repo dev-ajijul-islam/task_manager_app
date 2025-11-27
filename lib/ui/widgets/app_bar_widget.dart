@@ -25,13 +25,13 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Ajijul Islam",
+                  "${AuthController.user?.firstName}  ${AuthController.user?.firstName}",
                   style: TextTheme.of(
                     context,
                   ).bodyMedium?.copyWith(color: Colors.white),
                 ),
                 Text(
-                  "devajijulislam@gmail.com",
+                  AuthController.user?.email ?? "",
                   style: TextTheme.of(
                     context,
                   ).bodySmall?.copyWith(color: Colors.white),
@@ -43,10 +43,17 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
       ),
       backgroundColor: ColorScheme.of(context).primary,
       actions: [
-        IconButton(onPressed: () {
-          Navigator.pushNamedAndRemoveUntil(context, SignInScreen.name, (route) => false,);
-          AuthController.clearUserData();
-        }, icon: Icon(Icons.logout_outlined)),
+        IconButton(
+          onPressed: () {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              SignInScreen.name,
+              (route) => false,
+            );
+            AuthController.clearUserData();
+          },
+          icon: Icon(Icons.logout_outlined),
+        ),
       ],
     );
   }
