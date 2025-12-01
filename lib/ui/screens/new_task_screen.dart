@@ -48,15 +48,15 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                   visible: isLoadingNewTasks == false,
                   replacement: CenteredCircularProgrress(),
                   child: ListView.separated(
-                    separatorBuilder: (context,index){
-                      return SizedBox(width: 5,);
+                    separatorBuilder: (context, index) {
+                      return SizedBox(width: 5);
                     },
                     scrollDirection: Axis.horizontal,
                     itemCount: taskCountList.length,
                     itemBuilder: (context, index) {
                       TaskCountModel taskCount = taskCountList[index];
 
-                      return buildTaskSummary(context,taskCount);
+                      return buildTaskSummary(context, taskCount);
                     },
                   ),
                 ),
@@ -74,7 +74,16 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                       itemCount: taskList.length,
                       itemBuilder: (context, index) {
                         TaskModel task = taskList[index];
-                        return TaskCard(task: task);
+                        return TaskCard(
+                          task: task,
+                          onUpdate: () {
+                            getNewTasks();
+                            getTaskCounts();
+                          }, onDelete: () {
+                            getNewTasks();
+                            getTaskCounts();
+                          },
+                        );
                       },
                     ),
                   ),
@@ -89,7 +98,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
 
   Container buildTaskSummary(BuildContext context, TaskCountModel taskCount) {
     return Container(
-      width: MediaQuery.of(context).size.width/4 -5,
+      width: MediaQuery.of(context).size.width / 4 - 5,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),

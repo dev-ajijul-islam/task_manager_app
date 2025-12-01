@@ -145,15 +145,17 @@ class _SignInScreenState extends State<SignInScreen> {
         UserModel user = UserModel.fromJson(response.body["data"]);
         String token = response.body["token"];
 
-        await AuthController.saveUerData(token, user);
-
-        snackbarMessgae(context, "Sign in success");
-        _clearForm();
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          MainLayoutScreen.name,
-          (predicated) => false,
-        );
+        await AuthController.saveUerData(token, user).then((value) async {
+          await AuthController.getUserData().then((_) {
+            snackbarMessgae(context, "Sign in success");
+            _clearForm();
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              MainLayoutScreen.name,
+              (predicated) => false,
+            );
+          });
+        });
       } else {
         snackbarMessgae(context, response.errorMessage.toString());
       }

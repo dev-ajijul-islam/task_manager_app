@@ -38,9 +38,17 @@ class _ProgressingTaskScreenState extends State<ProgressingTaskScreen> {
               child: ListView.builder(
                 itemCount: taskList.length,
                 padding: EdgeInsets.all(10),
-                itemBuilder: (context,index){
+                itemBuilder: (context, index) {
                   TaskModel task = taskList[index];
-                  return TaskCard(task: task);
+                  return TaskCard(
+                    task: task,
+                    onUpdate: () {
+                      getProgessTask();
+                    },
+                    onDelete: () {
+                      getProgessTask();
+                    },
+                  );
                 },
               ),
             ),

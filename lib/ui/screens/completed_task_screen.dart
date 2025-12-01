@@ -40,7 +40,11 @@ class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
                 padding: EdgeInsets.all(10),
                 itemBuilder: (context, index) {
                   TaskModel task = taskList[index];
-                  return TaskCard(task: task);
+                  return TaskCard(task: task,onUpdate: (){
+                    getCompletedTasks();
+                  },onDelete: (){
+                    getCompletedTasks();
+                  });
                 },
               ),
             ),
