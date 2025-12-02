@@ -8,6 +8,7 @@ class Url {
   static final String cancelTaskUrl = "$_baseUrl/listTaskByStatus/Canceled";
   static final String progressTaskUrl = "$_baseUrl/listTaskByStatus/Progress";
   static final String taskCountUrl = "$_baseUrl/taskStatusCount";
+  static final String updateProfileUrl = "$_baseUrl/ProfileUpdate";
   static  String deleteUrl (id) => "$_baseUrl/deleteTask/$id";
   static  String updateUrl (id,status)=> "$_baseUrl/updateTaskStatus/$id/$status";
 }

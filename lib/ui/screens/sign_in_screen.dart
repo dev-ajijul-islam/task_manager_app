@@ -145,7 +145,7 @@ class _SignInScreenState extends State<SignInScreen> {
         UserModel user = UserModel.fromJson(response.body["data"]);
         String token = response.body["token"];
 
-        await AuthController.saveUerData(token, user).then((value) async {
+        await AuthController.saveUserData(token, user).then((value) async {
           await AuthController.getUserData().then((_) {
             snackbarMessgae(context, "Sign in success");
             _clearForm();
