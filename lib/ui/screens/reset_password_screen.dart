@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
 import 'package:task_managment_app/ui/screens/main_layout_screen.dart';
 import 'package:task_managment_app/ui/screens/sign_in_screen.dart';
+import 'package:task_managment_app/ui/widgets/centered_circular_progrress.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
 import 'package:task_managment_app/ui/widgets/snackbar_message.dart';
 import 'package:task_managment_app/utils/url.dart';
@@ -21,6 +22,8 @@ class _ResetPasswordScreen extends State<ResetPasswordScreen> {
   final _passwordRepeatController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic>? args =
@@ -38,7 +41,10 @@ class _ResetPasswordScreen extends State<ResetPasswordScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Set Password", style: TextTheme.of(context).bodyLarge),
+                    Text(
+                      "Set Password",
+                      style: TextTheme.of(context).bodyLarge,
+                    ),
                     Text(
                       "Minimum length password 8 character with Latter and number combination ",
                       style: TextTheme.of(
@@ -54,7 +60,7 @@ class _ResetPasswordScreen extends State<ResetPasswordScreen> {
                         if (value.length < 6) {
                           return "Enter 6 character password at least";
                         }
-              
+
                         return null;
                       },
                       decoration: InputDecoration(hintText: "Password"),
@@ -70,11 +76,15 @@ class _ResetPasswordScreen extends State<ResetPasswordScreen> {
                       decoration: InputDecoration(hintText: "Confirm Password"),
                     ),
                     SizedBox(height: 5),
-                    FilledButton(
-                      onPressed: () {
-                        _onTapConfirmButton(args);
-                      },
-                      child: Text("Confirm"),
+                    Visibility(
+                      visible: isLoading == false,
+                      replacement: CenteredCircularProgrress(),
+                      child: FilledButton(
+                        onPressed: () {
+                          _onTapConfirmButton(args);
+                        },
+                        child: Text("Confirm"),
+                      ),
                     ),
                     SizedBox(height: 10),
                     Center(
@@ -91,7 +101,9 @@ class _ResetPasswordScreen extends State<ResetPasswordScreen> {
                                     ..onTap = _onTapSignIn,
                                   text: "Sign in",
                                   style: TextStyle(
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                   ),
                                 ),
                               ],
@@ -111,6 +123,9 @@ class _ResetPasswordScreen extends State<ResetPasswordScreen> {
   }
 
   Future<void> _onTapConfirmButton(args) async {
+    setState(() {
+      isLoading = true;
+    });
     if (_formKey.currentState!.validate()) {
       NetworkResponse response = await NetworkCaller.postRequest(
         Url.resetPasswordUrl,
@@ -125,12 +140,15 @@ class _ResetPasswordScreen extends State<ResetPasswordScreen> {
         Navigator.pushNamedAndRemoveUntil(
           context,
           SignInScreen.name,
-              (route) => false,
+          (route) => false,
         );
       } else {
         snackbarMessgae(context, response.errorMessage.toString());
       }
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   void _onTapSignIn() {

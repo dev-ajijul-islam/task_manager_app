@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
 import 'package:task_managment_app/ui/screens/forget_password_otp_verification_screen.dart';
 import 'package:task_managment_app/ui/screens/sign_in_screen.dart';
+import 'package:task_managment_app/ui/widgets/centered_circular_progrress.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
 import 'package:task_managment_app/ui/widgets/snackbar_message.dart';
 import 'package:task_managment_app/utils/url.dart';
@@ -20,6 +21,8 @@ class _ForgetPasswordEmailState extends State<ForgetPasswordEmail> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final TextEditingController _emailController = TextEditingController();
+
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -60,9 +63,13 @@ class _ForgetPasswordEmailState extends State<ForgetPasswordEmail> {
                     decoration: InputDecoration(hintText: "Email"),
                   ),
                   SizedBox(height: 5),
-                  FilledButton(
-                    onPressed: _onTapSubmitEmailButton,
-                    child: Icon(Icons.arrow_circle_right_outlined, size: 25),
+                  Visibility(
+                    visible: isLoading == false,
+                    replacement: CenteredCircularProgrress(),
+                    child: FilledButton(
+                      onPressed: _onTapSubmitEmailButton,
+                      child: Icon(Icons.arrow_circle_right_outlined, size: 25),
+                    ),
                   ),
                   SizedBox(height: 10),
                   Center(
@@ -98,6 +105,9 @@ class _ForgetPasswordEmailState extends State<ForgetPasswordEmail> {
   }
 
   Future<void> _onTapSubmitEmailButton() async {
+    setState(() {
+      isLoading = true;
+    });
     if (_formKey.currentState!.validate()) {
       NetworkResponse response = await NetworkCaller.getRequest(
         Url.recoveryEmailUrl(_emailController.text.trim()),
@@ -114,6 +124,9 @@ class _ForgetPasswordEmailState extends State<ForgetPasswordEmail> {
         snackbarMessgae(context, response.errorMessage.toString());
       }
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   void _onTapSignIn() {

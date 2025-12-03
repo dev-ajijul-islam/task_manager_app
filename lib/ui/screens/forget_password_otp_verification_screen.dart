@@ -4,6 +4,7 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
 import 'package:task_managment_app/ui/screens/reset_password_screen.dart';
 import 'package:task_managment_app/ui/screens/sign_in_screen.dart';
+import 'package:task_managment_app/ui/widgets/centered_circular_progrress.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
 import 'package:task_managment_app/ui/widgets/snackbar_message.dart';
 import 'package:task_managment_app/utils/url.dart';
@@ -22,6 +23,9 @@ class _ForgetPasswordOtpVerificationScreen
     extends State<ForgetPasswordOtpVerificationScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _pinController = TextEditingController();
+
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     final email = ModalRoute.of(context)!.settings.arguments;
@@ -90,11 +94,15 @@ class _ForgetPasswordOtpVerificationScreen
                     appContext: context,
                   ),
                   SizedBox(height: 5),
-                  FilledButton(
-                    onPressed: () {
-                      _onTapSubmitVerifyButton(email);
-                    },
-                    child: Text("Verify"),
+                  Visibility(
+                    visible: isLoading == false,
+                    replacement: CenteredCircularProgrress(),
+                    child: FilledButton(
+                      onPressed: () {
+                        _onTapSubmitVerifyButton(email);
+                      },
+                      child: Text("Verify"),
+                    ),
                   ),
                   SizedBox(height: 10),
                   Center(
@@ -130,6 +138,9 @@ class _ForgetPasswordOtpVerificationScreen
   }
 
   Future<void> _onTapSubmitVerifyButton(email) async {
+    setState(() {
+      isLoading = true;
+    });
     if (_formKey.currentState!.validate()) {
       NetworkResponse response = await NetworkCaller.getRequest(
         Url.verifyOtpUrl(email, _pinController.text),
@@ -146,6 +157,9 @@ class _ForgetPasswordOtpVerificationScreen
         snackbarMessgae(context, response.errorMessage.toString());
       }
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   void _onTapSignIn() {

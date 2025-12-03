@@ -3,10 +3,12 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/date_symbols.dart';
 import 'package:task_managment_app/data/models/user_model.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
 import 'package:task_managment_app/ui/controllers/auth_controller.dart';
 import 'package:task_managment_app/ui/widgets/app_bar_widget.dart';
+import 'package:task_managment_app/ui/widgets/centered_circular_progrress.dart';
 
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
 import 'package:task_managment_app/ui/widgets/snackbar_message.dart';
@@ -23,6 +25,8 @@ class UpdateProfileScreen extends StatefulWidget {
 
 class _UpdateProfileScreen extends State<UpdateProfileScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  bool updateInProgress = false;
 
   XFile? image;
   final TextEditingController _emailTEController = TextEditingController();
@@ -172,9 +176,16 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
                       decoration: InputDecoration(hintText: "Password"),
                     ),
                     SizedBox(height: 5),
-                    FilledButton(
-                      onPressed: _onTapSignUpButton,
-                      child: Icon(Icons.arrow_circle_right_outlined, size: 25),
+                    Visibility(
+                      visible: updateInProgress == false,
+                      replacement: CenteredCircularProgrress(),
+                      child: FilledButton(
+                        onPressed: _onTapSignUpButton,
+                        child: Icon(
+                          Icons.arrow_circle_right_outlined,
+                          size: 25,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -193,6 +204,9 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
   }
 
   Future<void> _updateProfile() async {
+    setState(() {
+      updateInProgress = true;
+    });
     Map<String, dynamic> requestBody = {
       "email": _emailTEController.text.trim(),
       "firstName": _firtNamelTEController.text.trim(),
@@ -222,6 +236,9 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
     } else {
       snackbarMessgae(context, response.errorMessage.toString());
     }
+    setState(() {
+      updateInProgress = false;
+    });
   }
 
   Future<void> _pickImage() async {
