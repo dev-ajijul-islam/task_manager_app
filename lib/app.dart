@@ -20,7 +20,7 @@ class TaskManager extends StatefulWidget {
 class _TaskManagerState extends State<TaskManager> {
   @override
   Widget build(BuildContext context) {
-    final baseColor = Colors.green.shade600;
+    final baseColor = Color(0xFFc23616);
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,

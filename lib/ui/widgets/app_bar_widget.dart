@@ -26,7 +26,7 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
             children: [
               CircleAvatar(
                 radius: 22,
-                backgroundColor: Colors.green.shade400,
+                backgroundColor: ColorScheme.of(context).secondary,
                 backgroundImage: userImage,
                 child: userImage == null
                     ? Text(
