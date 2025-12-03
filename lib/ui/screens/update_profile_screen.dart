@@ -207,8 +207,6 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
     if (image != null) {
       Uint8List imageByte = await image!.readAsBytes();
       requestBody["photo"] = base64Encode(imageByte);
-
-
     }
 
     NetworkResponse response = await NetworkCaller.postRequest(
@@ -216,14 +214,12 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
       body: requestBody,
     );
 
-    if(response.isSuccess){
+    if (response.isSuccess) {
       await AuthController.updateUserData(UserModel.fromJson(requestBody));
       await AuthController.getUserData();
       snackbarMessgae(context, "Profile Updated");
-      setState(() {
-
-      });
-    }else{
+      setState(() {});
+    } else {
       snackbarMessgae(context, response.errorMessage.toString());
     }
   }

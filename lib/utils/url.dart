@@ -11,4 +11,5 @@ class Url {
   static final String updateProfileUrl = "$_baseUrl/ProfileUpdate";
   static  String deleteUrl (id) => "$_baseUrl/deleteTask/$id";
   static  String updateUrl (id,status)=> "$_baseUrl/updateTaskStatus/$id/$status";
+  static  String recoveryEmailUrl (email)=> "$_baseUrl/RecoverVerifyEmail/$email";
 }
