@@ -100,44 +100,57 @@ class _TaskCardState extends State<TaskCard> {
       builder: (context) {
         return AlertDialog(
           title: Text("Update status"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                onTap: () {
-                  _updateStatus(widget.task.id, "New");
-                },
-                title: Text("New"),
-                trailing: _isCuurrentStatus("New") ? Icon(Icons.done) : null,
+          content: ListTileTheme(
+            data: ListTileThemeData(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
               ),
-              ListTile(
-                onTap: () {
-                  _updateStatus(widget.task.id, "Completed");
-                },
-                title: Text("Completed"),
-                trailing: _isCuurrentStatus("Completed")
-                    ? Icon(Icons.done)
-                    : null,
+              tileColor: ColorScheme.of(context).primary.withAlpha(50),
+              titleTextStyle: TextStyle(
+                fontWeight: FontWeight.normal,
+                color: Colors.black,
               ),
-              ListTile(
-                onTap: () {
-                  _updateStatus(widget.task.id, "Canceled");
-                },
-                title: Text("Canceled"),
-                trailing: _isCuurrentStatus("Canceled")
-                    ? Icon(Icons.done)
-                    : null,
-              ),
-              ListTile(
-                onTap: () {
-                  _updateStatus(widget.task.id, "Progress");
-                },
-                title: Text("Progress"),
-                trailing: _isCuurrentStatus("Progress")
-                    ? Icon(Icons.done)
-                    : null,
-              ),
-            ],
+            ),
+            child: Column(
+              spacing: 5,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  onTap: () {
+                    _updateStatus(widget.task.id, "New");
+                  },
+                  title: Text("New"),
+                  trailing: _isCuurrentStatus("New") ? Icon(Icons.done) : null,
+                ),
+                ListTile(
+                  onTap: () {
+                    _updateStatus(widget.task.id, "Completed");
+                  },
+                  title: Text("Completed"),
+                  trailing: _isCuurrentStatus("Completed")
+                      ? Icon(Icons.done)
+                      : null,
+                ),
+                ListTile(
+                  onTap: () {
+                    _updateStatus(widget.task.id, "Canceled");
+                  },
+                  title: Text("Canceled"),
+                  trailing: _isCuurrentStatus("Canceled")
+                      ? Icon(Icons.done)
+                      : null,
+                ),
+                ListTile(
+                  onTap: () {
+                    _updateStatus(widget.task.id, "Progress");
+                  },
+                  title: Text("Progress"),
+                  trailing: _isCuurrentStatus("Progress")
+                      ? Icon(Icons.done)
+                      : null,
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -176,9 +189,7 @@ class _TaskCardState extends State<TaskCard> {
               child: Text("Cancel"),
             ),
             FilledButton(
-              style: FilledButton.styleFrom(
-                maximumSize: Size(150, 45)
-              ),
+              style: FilledButton.styleFrom(maximumSize: Size(140, 45)),
               onPressed: () async {
                 NetworkResponse response = await NetworkCaller.getRequest(
                   Url.deleteUrl(id),
@@ -187,8 +198,7 @@ class _TaskCardState extends State<TaskCard> {
                   snackbarMessgae(context, "Task deleted");
                   Navigator.pop(context);
                   widget.onDelete();
-                }
-                else{
+                } else {
                   snackbarMessgae(context, "${response.body}");
                   Navigator.pop(context);
                 }
@@ -200,22 +210,18 @@ class _TaskCardState extends State<TaskCard> {
       },
     );
   }
-  
-  Color getColorByStatus(String status){
-    if(status == "New") {return Colors.blueAccent.withAlpha(700);}
-    else if(status == "Completed") {
-     return ColorScheme
-          .of(context)
-          .primary
-          .withAlpha(700);
-    }
-    else if(status == "Canceled") {
+
+  Color getColorByStatus(String status) {
+    if (status == "New") {
+      return Colors.blueAccent.withAlpha(700);
+    } else if (status == "Completed") {
+      return ColorScheme.of(context).primary.withAlpha(700);
+    } else if (status == "Canceled") {
       return Colors.redAccent.withAlpha(700);
-    }
-    else if(status == "Canceled") {
+    } else if (status == "Canceled") {
       return Colors.redAccent.withAlpha(700);
-    }else{
-     return Colors.deepOrange.withAlpha(700);
+    } else {
+      return Colors.deepOrange.withAlpha(700);
     }
   }
 }

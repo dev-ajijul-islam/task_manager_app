@@ -28,6 +28,8 @@ class _SignUpScreen extends State<SignUpScreen> {
   final TextEditingController _mobileTEController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
 
+  bool  isPasswordShow = true;
+
   @override
   void dispose() {
     super.dispose();
@@ -62,7 +64,7 @@ class _SignUpScreen extends State<SignUpScreen> {
                     TextFormField(
                       controller: _emailTEController,
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "Email"),
+                      decoration: InputDecoration(hintText: "Email",prefixIcon: Icon(Icons.mail_outline)),
                       validator: (String? value) {
                         if (value?.trim().isEmpty ?? true) {
                           return "Enter email";
@@ -76,7 +78,7 @@ class _SignUpScreen extends State<SignUpScreen> {
                     TextFormField(
                       controller: _firstNameTEController,
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "First name"),
+                      decoration: InputDecoration(hintText: "First name",prefixIcon: Icon(Icons.person_outline)),
                       validator: (String? value) {
                         if (value?.trim().isEmpty ?? true) {
                           return "Enter first name";
@@ -85,9 +87,10 @@ class _SignUpScreen extends State<SignUpScreen> {
                       },
                     ),
                     TextFormField(
+
                       controller: _lastNameTEController,
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "Last name"),
+                      decoration: InputDecoration(hintText: "Last name",prefixIcon: Icon(Icons.person_outline)),
                       validator: (String? value) {
                         if (value?.trim().isEmpty ?? true) {
                           return "Enter last name";
@@ -96,9 +99,10 @@ class _SignUpScreen extends State<SignUpScreen> {
                       },
                     ),
                     TextFormField(
+                      
                       controller: _mobileTEController,
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "Mobile"),
+                      decoration: InputDecoration(hintText: "Mobile",prefixIcon: Icon(Icons.phone_outlined)),
                       validator: (String? value) {
                         if (value?.trim().isEmpty ?? true) {
                           return "Enter mobile";
@@ -107,10 +111,23 @@ class _SignUpScreen extends State<SignUpScreen> {
                       },
                     ),
                     TextFormField(
+
                       controller: _passwordTEController,
-                      obscureText: true,
+                      obscureText: isPasswordShow,
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "Password"),
+                      decoration: InputDecoration(hintText: "Password",    prefixIcon: Icon(Icons.lock_outline),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              isPasswordShow = !isPasswordShow;
+                            });
+                          },
+                          icon: Icon(
+                            isPasswordShow
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                          ),
+                        ),),
                       validator: (String? value) {
                         if (value?.trim().isEmpty ?? true) {
                           return "Enter email";

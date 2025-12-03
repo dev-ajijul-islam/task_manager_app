@@ -57,7 +57,7 @@ class _AddNewTaskScreen extends State<AddNewTaskScreen> {
                         return null;
                       },
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "Subject"),
+                      decoration: InputDecoration(hintText: "Subject",prefixIcon: Icon(Icons.note_add_outlined)),
                     ),
                     TextFormField(
                       controller: _descriptionTEController,
@@ -69,7 +69,7 @@ class _AddNewTaskScreen extends State<AddNewTaskScreen> {
                         return null;
                       },
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "Description"),
+                      decoration: InputDecoration(hintText: "Description",prefixIcon: Icon(Icons.document_scanner_outlined)),
                     ),
                     SizedBox(height: 5),
                     Visibility(

@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/date_symbols.dart';
 import 'package:task_managment_app/data/models/user_model.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
 import 'package:task_managment_app/ui/controllers/auth_controller.dart';
@@ -35,6 +34,8 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
   final TextEditingController _mobileTEController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
 
+  bool isPasswordShow = true;
+
   @override
   void initState() {
     UserModel? userModel = AuthController.user;
@@ -59,12 +60,14 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
                 key: _formKey,
                 child: Column(
                   spacing: 10,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      "Update Profile",
-                      style: TextTheme.of(context).bodyLarge,
+                    CircleAvatar(
+                      radius: 60,
+                      backgroundImage: MemoryImage(
+                        base64Decode(AuthController.user!.photo!),
+                      ),
                     ),
                     SizedBox(height: 5),
                     InkWell(
@@ -124,7 +127,8 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
                       },
                       controller: _emailTEController,
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "Email"),
+                      decoration: InputDecoration(hintText: "Email",
+                      prefixIcon: Icon(Icons.mail_outline)),
                     ),
                     TextFormField(
                       validator: (value) {
@@ -135,7 +139,8 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
                       },
                       controller: _firtNamelTEController,
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "First name"),
+                      decoration: InputDecoration(hintText: "First name",
+                      prefixIcon: Icon(Icons.person_outline)),
                     ),
                     TextFormField(
                       validator: (value) {
@@ -146,7 +151,8 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
                       },
                       controller: _lastNameTEController,
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "Last name"),
+                      decoration: InputDecoration(hintText: "Last name",
+                      prefixIcon: Icon(Icons.person_outline)),
                     ),
                     TextFormField(
                       validator: (value) {
@@ -154,14 +160,16 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
                           return "Enter phone number";
                         }
                         if (value.length < 11) {
-                          return "Phone number must be at least 11 charecter";
+                          return "Phone number must be at least 11 character";
                         }
                         return null;
                       },
                       keyboardType: TextInputType.phone,
                       controller: _mobileTEController,
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "Mobile"),
+                      decoration: InputDecoration(hintText: "Mobile",
+                        prefixIcon: Icon(Icons.phone_outlined)
+                      ),
                     ),
                     TextFormField(
                       validator: (value) {
@@ -171,9 +179,24 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
                         return null;
                       },
                       controller: _passwordTEController,
-                      obscureText: true,
+                      obscureText: isPasswordShow,
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "Password"),
+                      decoration: InputDecoration(
+                        hintText: "Password",
+                        prefixIcon: Icon(Icons.lock_outline),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              isPasswordShow = !isPasswordShow;
+                            });
+                          },
+                          icon: Icon(
+                            isPasswordShow
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                          ),
+                        ),
+                      ),
                     ),
                     SizedBox(height: 5),
                     Visibility(

@@ -23,6 +23,7 @@ class _ResetPasswordScreen extends State<ResetPasswordScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool isLoading = false;
+  bool isPasswordShow = true;
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +53,8 @@ class _ResetPasswordScreen extends State<ResetPasswordScreen> {
                       ).bodyMedium?.copyWith(color: Colors.grey),
                     ),
                     TextFormField(
+                      style: TextTheme.of(context).bodyMedium,
+                      obscureText: isPasswordShow,
                       controller: _passwordController,
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -63,9 +66,26 @@ class _ResetPasswordScreen extends State<ResetPasswordScreen> {
 
                         return null;
                       },
-                      decoration: InputDecoration(hintText: "Password"),
+                      decoration: InputDecoration(
+                        hintText: "Password",
+                        prefixIcon: Icon(Icons.lock_outline),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              isPasswordShow = !isPasswordShow;
+                            });
+                          },
+                          icon: Icon(
+                            isPasswordShow
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                          ),
+                        ),
+                      ),
                     ),
                     TextFormField(
+                      style: TextTheme.of(context).bodyMedium,
+                      obscureText: isPasswordShow,
                       controller: _passwordRepeatController,
                       validator: (value) {
                         if (value != _passwordController.text) {
@@ -73,7 +93,22 @@ class _ResetPasswordScreen extends State<ResetPasswordScreen> {
                         }
                         return null;
                       },
-                      decoration: InputDecoration(hintText: "Confirm Password"),
+                      decoration: InputDecoration(
+                        hintText: "Confirm Password",
+                        prefixIcon: Icon(Icons.lock_outline),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              isPasswordShow = !isPasswordShow;
+                            });
+                          },
+                          icon: Icon(
+                            isPasswordShow
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                          ),
+                        ),
+                      ),
                     ),
                     SizedBox(height: 5),
                     Visibility(

@@ -83,8 +83,6 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
     if (photo == null || photo.isEmpty) return null;
 
     try {
-      final clean = photo.contains(',') ? photo.split(',').last : photo;
-
       return MemoryImage(base64Decode(photo));
     } catch (_) {
       return null;

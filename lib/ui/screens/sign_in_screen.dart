@@ -26,6 +26,8 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _emailTEController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
 
+  bool isPasswordShow = true;
+
   bool signInProgress = false;
 
   @override
@@ -60,19 +62,35 @@ class _SignInScreenState extends State<SignInScreen> {
                     },
                     controller: _emailTEController,
                     style: TextStyle(fontSize: 14),
-                    decoration: InputDecoration(hintText: "Email"),
+                    decoration: InputDecoration(hintText: "Email",prefixIcon: Icon(Icons.person_outline)),
                   ),
                   TextFormField(
                     validator: (String? value) {
                       if (value?.trim().isEmpty ?? true) {
-                        return "Enter first name";
+                        return "Enter password";
                       }
                       return null;
                     },
+
                     controller: _passwordTEController,
-                    obscureText: true,
+                    obscureText: isPasswordShow,
                     style: TextStyle(fontSize: 14),
-                    decoration: InputDecoration(hintText: "Password"),
+                    decoration: InputDecoration(
+                      hintText: "Password",
+                      prefixIcon: Icon(Icons.lock_outline),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            isPasswordShow = !isPasswordShow;
+                          });
+                        },
+                        icon: Icon(
+                          isPasswordShow
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
+                        ),
+                      ),
+                    ),
                   ),
                   SizedBox(height: 5),
                   Visibility(

@@ -60,7 +60,7 @@ class _ForgetPasswordEmailState extends State<ForgetPasswordEmail> {
                     },
                     controller: _emailController,
                     style: TextStyle(fontSize: 14),
-                    decoration: InputDecoration(hintText: "Email"),
+                    decoration: InputDecoration(hintText: "Email",prefixIcon: Icon(Icons.mail_outline)),
                   ),
                   SizedBox(height: 5),
                   Visibility(
