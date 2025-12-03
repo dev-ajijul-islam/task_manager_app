@@ -97,16 +97,20 @@ class _ForgetPasswordEmailState extends State<ForgetPasswordEmail> {
     );
   }
 
-  Future <void> _onTapSubmitEmailButton() async {
+  Future<void> _onTapSubmitEmailButton() async {
     if (_formKey.currentState!.validate()) {
       NetworkResponse response = await NetworkCaller.getRequest(
         Url.recoveryEmailUrl(_emailController.text.trim()),
       );
 
-      if(response.statusCode == 200){
+      if (response.statusCode == 200) {
         snackbarMessgae(context, response.body["data"]);
-        Navigator.pushNamed(context, ForgetPasswordOtpVerificationScreen.name);
-      }else{
+        Navigator.pushNamed(
+          context,
+          ForgetPasswordOtpVerificationScreen.name,
+          arguments: _emailController.text,
+        );
+      } else {
         snackbarMessgae(context, response.errorMessage.toString());
       }
     }

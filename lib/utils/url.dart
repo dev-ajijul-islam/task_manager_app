@@ -9,7 +9,9 @@ class Url {
   static final String progressTaskUrl = "$_baseUrl/listTaskByStatus/Progress";
   static final String taskCountUrl = "$_baseUrl/taskStatusCount";
   static final String updateProfileUrl = "$_baseUrl/ProfileUpdate";
+  static final String resetPasswordUrl = "$_baseUrl/RecoverResetPassword";
   static  String deleteUrl (id) => "$_baseUrl/deleteTask/$id";
   static  String updateUrl (id,status)=> "$_baseUrl/updateTaskStatus/$id/$status";
   static  String recoveryEmailUrl (email)=> "$_baseUrl/RecoverVerifyEmail/$email";
+  static  String verifyOtpUrl (email,code)=> "$_baseUrl/RecoverVerifyOtp/$email/$code";
 }

@@ -1,9 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:task_managment_app/data/services/network_caller.dart';
 import 'package:task_managment_app/ui/screens/reset_password_screen.dart';
 import 'package:task_managment_app/ui/screens/sign_in_screen.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
+import 'package:task_managment_app/ui/widgets/snackbar_message.dart';
+import 'package:task_managment_app/utils/url.dart';
 
 class ForgetPasswordOtpVerificationScreen extends StatefulWidget {
   const ForgetPasswordOtpVerificationScreen({super.key});
@@ -17,78 +20,108 @@ class ForgetPasswordOtpVerificationScreen extends StatefulWidget {
 
 class _ForgetPasswordOtpVerificationScreen
     extends State<ForgetPasswordOtpVerificationScreen> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _pinController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final email = ModalRoute.of(context)!.settings.arguments;
     return Scaffold(
       body: ScreenBackground(
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(25),
-            child: Column(
-              spacing: 10,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "PIN Verification",
-                  style: TextTheme.of(context).bodyLarge,
-                ),
-                Text(
-                  "A 6 digit pin code will sent to Your Email Address",
-                  style: TextTheme.of(
-                    context,
-                  ).bodyMedium?.copyWith(color: Colors.grey),
-                ),
-                PinCodeTextField(
-                  keyboardType: TextInputType.number,
-                  length: 6,
-                  obscureText: false,
-                  animationType: AnimationType.fade,
-                  pinTheme: PinTheme(
-                    shape: PinCodeFieldShape.box,
-                    borderRadius: BorderRadius.circular(5),
-                    fieldHeight: 50,
-                    fieldWidth: 40,
-                    activeFillColor: Colors.white,
-                    activeColor: Colors.white,
-                    selectedFillColor: Colors.white,
-                    inactiveFillColor: Colors.white,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                spacing: 10,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "PIN Verification",
+                    style: TextTheme.of(context).bodyLarge,
                   ),
-                  animationDuration: Duration(milliseconds: 300),
-                  backgroundColor: Colors.transparent,
-                  enableActiveFill: true,
-                  appContext: context,
-                ),
-                SizedBox(height: 5),
-                FilledButton(
-                  onPressed: _onTapSubmitVerifyButton,
-                  child: Text("Verify"),
-                ),
-                SizedBox(height: 10),
-                Center(
-                  child: Column(
-                    spacing: 5,
-                    children: [
-                      RichText(
-                        text: TextSpan(
-                          style: TextStyle(color: Colors.black87),
-                          text: "have an account? ",
-                          children: [
-                            TextSpan(
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = _onTapSignIn,
-                              text: "Sign in",
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
-                          ],
+
+                  RichText(
+                    text: TextSpan(
+                      text: "A 6 digit pin code will sent to the email ",
+                      children: [
+                        TextSpan(
+                          text: "$email",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                      style: TextTheme.of(
+                        context,
+                      ).bodyMedium?.copyWith(color: Colors.grey),
+                    ),
                   ),
-                ),
-              ],
+                  PinCodeTextField(
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Enter pin to continue";
+                      }
+                      if (value.length < 6) {
+                        return "input 6 digit to continue";
+                      }
+                      return null;
+                    },
+                    controller: _pinController,
+                    keyboardType: TextInputType.number,
+                    length: 6,
+                    obscureText: false,
+                    animationType: AnimationType.fade,
+                    pinTheme: PinTheme(
+                      shape: PinCodeFieldShape.box,
+                      borderRadius: BorderRadius.circular(5),
+                      fieldHeight: 50,
+                      fieldWidth: 40,
+                      activeFillColor: Colors.white,
+                      activeColor: Colors.white,
+                      selectedFillColor: Colors.white,
+                      inactiveFillColor: Colors.white,
+                    ),
+                    animationDuration: Duration(milliseconds: 300),
+                    backgroundColor: Colors.transparent,
+                    enableActiveFill: true,
+                    appContext: context,
+                  ),
+                  SizedBox(height: 5),
+                  FilledButton(
+                    onPressed: () {
+                      _onTapSubmitVerifyButton(email);
+                    },
+                    child: Text("Verify"),
+                  ),
+                  SizedBox(height: 10),
+                  Center(
+                    child: Column(
+                      spacing: 5,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            style: TextStyle(color: Colors.black87),
+                            text: "have an account? ",
+                            children: [
+                              TextSpan(
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = _onTapSignIn,
+                                text: "Sign in",
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -96,8 +129,23 @@ class _ForgetPasswordOtpVerificationScreen
     );
   }
 
-  void _onTapSubmitVerifyButton() {
-    Navigator.pushNamed(context, ResetPasswordScreen.name);
+  Future<void> _onTapSubmitVerifyButton(email) async {
+    if (_formKey.currentState!.validate()) {
+      NetworkResponse response = await NetworkCaller.getRequest(
+        Url.verifyOtpUrl(email, _pinController.text),
+      );
+
+      if (response.isSuccess) {
+        snackbarMessgae(context, "Email Verification success");
+        Navigator.pushNamed(
+          context,
+          ResetPasswordScreen.name,
+          arguments: {"email": email, "pin": _pinController.text},
+        );
+      } else {
+        snackbarMessgae(context, response.errorMessage.toString());
+      }
+    }
   }
 
   void _onTapSignIn() {
