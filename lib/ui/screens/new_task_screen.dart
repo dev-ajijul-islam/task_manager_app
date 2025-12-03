@@ -44,21 +44,17 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
             children: [
               SizedBox(
                 height: 70,
-                child: Visibility(
-                  visible: isLoadingNewTasks == false,
-                  replacement: CenteredCircularProgrress(),
-                  child: ListView.separated(
-                    separatorBuilder: (context, index) {
-                      return SizedBox(width: 5);
-                    },
-                    scrollDirection: Axis.horizontal,
-                    itemCount: taskCountList.length,
-                    itemBuilder: (context, index) {
-                      TaskCountModel taskCount = taskCountList[index];
+                child: ListView.separated(
+                  separatorBuilder: (context, index) {
+                    return SizedBox(width: 5);
+                  },
+                  scrollDirection: Axis.horizontal,
+                  itemCount: taskCountList.length,
+                  itemBuilder: (context, index) {
+                    TaskCountModel taskCount = taskCountList[index];
 
-                      return buildTaskSummary(context, taskCount);
-                    },
-                  ),
+                    return buildTaskSummary(context, taskCount);
+                  },
                 ),
               ),
               Visibility(
