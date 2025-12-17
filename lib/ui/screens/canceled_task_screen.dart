@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:task_managment_app/data/models/task_model.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
+import 'package:task_managment_app/providers/canceled_task_provider.dart';
 import 'package:task_managment_app/ui/widgets/centered_circular_progrress.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
 import 'package:task_managment_app/ui/widgets/task_card.dart';
@@ -19,7 +21,11 @@ class _CanceledTaskScreenState extends State<CanceledTaskScreen> {
 
   @override
   void initState() {
-    getCanceledTasks();
+    Future.microtask(() {
+      if(mounted){
+        context.read<CanceledTaskProvider>().getCanceledTask();
+      }
+    },);
     super.initState();
   }
 
@@ -30,27 +36,35 @@ class _CanceledTaskScreenState extends State<CanceledTaskScreen> {
         child: Center(
           child: RefreshIndicator(
             onRefresh: () async {
-              getCanceledTasks();
+              context.read<CanceledTaskProvider>().getCanceledTask();
             },
-            child: Visibility(
-              visible: isLoadingTask == false,
-              replacement: CenteredCircularProgrress(),
-              child: ListView.builder(
-                itemCount: taskList.length,
-                padding: EdgeInsets.all(10),
-                itemBuilder: (context, index) {
-                  TaskModel task = taskList[index];
-                  return TaskCard(
-                    task: task,
-                    onUpdate: () {
-                      getCanceledTasks();
-                    },
-                    onDelete: () {
-                      getCanceledTasks();
+            child: Consumer<CanceledTaskProvider>(
+              builder: (context, provider, child) {
+                if(provider.isLoading){
+                  return CenteredCircularProgrress();
+                }else if(provider.canceledTasks.isEmpty){
+                  return Center(child: Text("Task not found"),);
+                }else if(provider.errorMessage !=  null){
+                  return Center(child: Text(provider.errorMessage.toString()),);
+                }else{
+                  return ListView.builder(
+                    itemCount: provider.canceledTasks.length,
+                    padding: EdgeInsets.all(10),
+                    itemBuilder: (context, index) {
+                      TaskModel task = provider.canceledTasks[index];
+                      return TaskCard(
+                        task: task,
+                        onUpdate: () {
+                          provider.getCanceledTask();
+                        },
+                        onDelete: () {
+                          provider.getCanceledTask();
+                        },
+                      );
                     },
                   );
-                },
-              ),
+                }
+              },
             ),
           ),
         ),
