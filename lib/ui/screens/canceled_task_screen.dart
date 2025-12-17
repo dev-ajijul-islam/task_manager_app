@@ -16,16 +16,13 @@ class CanceledTaskScreen extends StatefulWidget {
 }
 
 class _CanceledTaskScreenState extends State<CanceledTaskScreen> {
-  bool isLoadingTask = false;
-  List<TaskModel> taskList = [];
-
   @override
   void initState() {
     Future.microtask(() {
-      if(mounted){
+      if (mounted) {
         context.read<CanceledTaskProvider>().getCanceledTask();
       }
-    },);
+    });
     super.initState();
   }
 
@@ -40,13 +37,13 @@ class _CanceledTaskScreenState extends State<CanceledTaskScreen> {
             },
             child: Consumer<CanceledTaskProvider>(
               builder: (context, provider, child) {
-                if(provider.isLoading){
+                if (provider.isLoading) {
                   return CenteredCircularProgrress();
-                }else if(provider.canceledTasks.isEmpty){
-                  return Center(child: Text("Task not found"),);
-                }else if(provider.errorMessage !=  null){
-                  return Center(child: Text(provider.errorMessage.toString()),);
-                }else{
+                } else if (provider.canceledTasks.isEmpty) {
+                  return Center(child: Text("Task not found"));
+                } else if (provider.errorMessage != null) {
+                  return Center(child: Text(provider.errorMessage.toString()));
+                } else {
                   return ListView.builder(
                     itemCount: provider.canceledTasks.length,
                     padding: EdgeInsets.all(10),
@@ -70,22 +67,5 @@ class _CanceledTaskScreenState extends State<CanceledTaskScreen> {
         ),
       ),
     );
-  }
-
-  Future<void> getCanceledTasks() async {
-    isLoadingTask = true;
-    setState(() {});
-    NetworkResponse response = await NetworkCaller.getRequest(
-      Url.cancelTaskUrl,
-    );
-    if (response.isSuccess) {
-      List<TaskModel> list = [];
-      for (Map<String, dynamic> json in response.body["data"]) {
-        list.add(TaskModel.fromJson(json));
-      }
-      taskList = list;
-    }
-    isLoadingTask = false;
-    setState(() {});
   }
 }
