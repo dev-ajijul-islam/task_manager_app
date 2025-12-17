@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_managment_app/data/models/user_model.dart';
 
 class UserProvider extends ChangeNotifier {
-  String? accessToken;
+  static String? accessToken;
   UserModel? user;
   final String _userKey = "user";
   final String _tokenKey = "token";

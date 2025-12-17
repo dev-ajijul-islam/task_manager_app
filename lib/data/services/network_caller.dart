@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
-import 'package:task_managment_app/ui/controllers/auth_controller.dart';
+import 'package:task_managment_app/providers/user_provider.dart';
+
 
 class NetworkCaller {
   //get request
@@ -12,7 +13,7 @@ class NetworkCaller {
 
     try {
       Response response = await get(url,headers: {
-        "token": provider.accessToken ?? "",
+        "token": UserProvider.accessToken ?? "",
       });
 
       _logResponse(uri, response: response);
@@ -56,7 +57,7 @@ class NetworkCaller {
         body: jsonEncode(body),
         headers: {
           "Content-Type": "application/json",
-          "token": provider.accessToken ?? "",
+          "token": UserProvider.accessToken ?? "",
         },
       );
 
