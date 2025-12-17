@@ -22,7 +22,7 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
           Navigator.pushNamed(context, UpdateProfileScreen.name);
         },
         child: Consumer<UserProvider>(
-          builder: (context, provider, child) {
+          builder: (context, UserProvider provider, child) {
             return SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
