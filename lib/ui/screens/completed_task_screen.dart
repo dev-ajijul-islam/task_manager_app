@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:task_managment_app/data/models/task_model.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
+import 'package:task_managment_app/providers/completed_task_provider.dart';
 import 'package:task_managment_app/ui/widgets/centered_circular_progrress.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
 import 'package:task_managment_app/ui/widgets/task_card.dart';
@@ -14,12 +16,13 @@ class CompletedTaskScreen extends StatefulWidget {
 }
 
 class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
-  bool isLoadingTask = false;
-  List<TaskModel> taskList = [];
-
   @override
   void initState() {
-    getCompletedTasks();
+    Future.microtask(() {
+      if (mounted) {
+        context.read<CompletedTaskProvider>().getCompletedTasks();
+      }
+    });
     super.initState();
   }
 
@@ -30,21 +33,36 @@ class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
         child: Center(
           child: RefreshIndicator(
             onRefresh: () async {
-              getCompletedTasks();
+              context.read<CompletedTaskProvider>().getCompletedTasks();
             },
             child: Visibility(
-              visible: isLoadingTask == false,
+              visible:
+                  context.watch<CompletedTaskProvider>().isLoading == false,
               replacement: CenteredCircularProgrress(),
-              child: ListView.builder(
-                itemCount: taskList.length,
-                padding: EdgeInsets.all(10),
-                itemBuilder: (context, index) {
-                  TaskModel task = taskList[index];
-                  return TaskCard(task: task,onUpdate: (){
-                    getCompletedTasks();
-                  },onDelete: (){
-                    getCompletedTasks();
-                  });
+              child: Consumer<CompletedTaskProvider>(
+                builder: (context, provider, child) {
+                  if (provider.isLoading) {
+                    return CenteredCircularProgrress();
+                  } else if (provider.completedTasks.isEmpty) {
+                    return Center(child: Text("No Task found"));
+                  } else {
+                    return ListView.builder(
+                      itemCount: provider.completedTasks.length,
+                      padding: EdgeInsets.all(10),
+                      itemBuilder: (context, index) {
+                        TaskModel task = provider.completedTasks[index];
+                        return TaskCard(
+                          task: task,
+                          onUpdate: () {
+                            provider.getCompletedTasks();
+                          },
+                          onDelete: () {
+                            provider.getCompletedTasks();
+                          },
+                        );
+                      },
+                    );
+                  }
                 },
               ),
             ),
@@ -52,22 +70,5 @@ class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
         ),
       ),
     );
-  }
-
-  Future<void> getCompletedTasks() async {
-    isLoadingTask = true;
-    setState(() {});
-    NetworkResponse response = await NetworkCaller.getRequest(
-      Url.completeTaskUrl,
-    );
-    if (response.isSuccess) {
-      List<TaskModel> list = [];
-      for (Map<String, dynamic> json in response.body["data"]) {
-        list.add(TaskModel.fromJson(json));
-      }
-      taskList = list;
-    }
-    isLoadingTask = false;
-    setState(() {});
   }
 }

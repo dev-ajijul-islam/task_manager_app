@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:task_managment_app/providers/completed_task_provider.dart';
 import 'package:task_managment_app/providers/new_task_provider.dart';
 import 'package:task_managment_app/providers/sign_in_provider.dart';
 import 'package:task_managment_app/providers/sign_up_provider.dart';
@@ -35,6 +36,7 @@ class _TaskManagerState extends State<TaskManager> {
         ChangeNotifierProvider(create: (_) => SignUpProvider()),
         ChangeNotifierProvider(create: (_) => NewTaskProvider()),
         ChangeNotifierProvider(create: (_) => TaskCountProvider()),
+        ChangeNotifierProvider(create: (_)=> CompletedTaskProvider())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
