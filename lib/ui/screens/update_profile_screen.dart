@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 import 'package:task_managment_app/data/models/user_model.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
 import 'package:task_managment_app/providers/user_provider.dart';
-import 'package:task_managment_app/ui/controllers/auth_controller.dart';
 import 'package:task_managment_app/ui/widgets/app_bar_widget.dart';
 import 'package:task_managment_app/ui/widgets/centered_circular_progrress.dart';
 

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:task_managment_app/data/models/task_count_model.dart';
 import 'package:task_managment_app/data/models/task_model.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
+import 'package:task_managment_app/providers/new_task_provider.dart';
 import 'package:task_managment_app/ui/screens/add_new_task_screen.dart';
 import 'package:task_managment_app/ui/widgets/centered_circular_progrress.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
@@ -18,14 +20,15 @@ class NewTaskScreen extends StatefulWidget {
 }
 
 class _NewTaskScreenState extends State<NewTaskScreen> {
-  bool isLoadingNewTasks = false;
-  List<TaskModel> taskList = [];
   List<TaskCountModel> taskCountList = [];
 
   @override
   void initState() {
-    getTaskCounts();
-    getNewTasks();
+    Future.microtask(() {
+      if (mounted) {
+        context.read<NewTaskProvider>().getNewTasks();
+      }
+    });
     super.initState();
   }
 
@@ -57,33 +60,40 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                   },
                 ),
               ),
-              Visibility(
-                visible: isLoadingNewTasks == false,
-                replacement: CenteredCircularProgrress(),
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height - 230,
-                  child: RefreshIndicator(
-                    onRefresh: () async {
-                      getNewTasks();
-                    },
-                    child: ListView.builder(
-                      itemCount: taskList.length,
-                      itemBuilder: (context, index) {
-                        TaskModel task = taskList[index];
-                        return TaskCard(
-                          task: task,
-                          onUpdate: () {
-                            getNewTasks();
-                            getTaskCounts();
-                          }, onDelete: () {
-                            getNewTasks();
-                            getTaskCounts();
+              Consumer<NewTaskProvider>(
+                builder: (context, provider, child) {
+                  if (provider.isLoading) {
+                    return CenteredCircularProgrress();
+                  } else if (provider.errorMessage != null) {
+                    return Text(provider.errorMessage.toString());
+                  } else {
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height - 230,
+                      child: RefreshIndicator(
+                        onRefresh: () async {
+                          provider.getNewTasks();
+                        },
+                        child: ListView.builder(
+                          itemCount: provider.newTasks.length,
+                          itemBuilder: (context, index) {
+                            TaskModel task = provider.newTasks[index];
+                            return TaskCard(
+                              task: task,
+                              onUpdate: () {
+                                provider.getNewTasks();
+                                getTaskCounts();
+                              },
+                              onDelete: () {
+                                provider.getNewTasks();
+                                getTaskCounts();
+                              },
+                            );
                           },
-                        );
-                      },
-                    ),
-                  ),
-                ),
+                        ),
+                      ),
+                    );
+                  }
+                },
               ),
             ],
           ),
@@ -117,30 +127,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     );
   }
 
-  Future<void> getNewTasks() async {
-    setState(() {
-      isLoadingNewTasks = true;
-    });
-
-    NetworkResponse response = await NetworkCaller.getRequest(Url.newTaskUrl);
-    if (response.isSuccess) {
-      List<TaskModel> list = [];
-
-      for (Map<String, dynamic> task in response.body["data"]) {
-        list.add(TaskModel.fromJson(task));
-      }
-
-      taskList = list;
-    }
-
-    setState(() {
-      isLoadingNewTasks = false;
-    });
-  }
-
   Future<void> getTaskCounts() async {
-    isLoadingNewTasks = false;
-
     NetworkResponse response = await NetworkCaller.getRequest(Url.taskCountUrl);
 
     if (response.isSuccess) {
@@ -153,9 +140,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
         taskCountList = list;
       });
     }
-    setState(() {
-      isLoadingNewTasks = false;
-    });
+    setState(() {});
   }
 
   void _onTapAddTaskButton() {

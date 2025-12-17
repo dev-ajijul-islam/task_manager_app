@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:task_managment_app/providers/new_task_provider.dart';
 import 'package:task_managment_app/providers/sign_in_provider.dart';
 import 'package:task_managment_app/providers/sign_up_provider.dart';
 import 'package:task_managment_app/providers/user_provider.dart';
@@ -28,9 +29,10 @@ class _TaskManagerState extends State<TaskManager> {
 
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => SignInProvider(),),
-        ChangeNotifierProvider(create: (_)=> UserProvider()),
-        ChangeNotifierProvider(create: (_)=> SignUpProvider())
+        ChangeNotifierProvider(create: (_) => SignInProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => SignUpProvider()),
+        ChangeNotifierProvider(create: (_) => NewTaskProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -60,8 +62,10 @@ class _TaskManagerState extends State<TaskManager> {
           inputDecorationTheme: InputDecorationTheme(
             filled: true,
             fillColor: Colors.white,
-            contentPadding:
-            const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 15,
+              vertical: 12,
+            ),
             hintStyle: TextStyle(fontSize: 14, color: Colors.grey.shade500),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
@@ -122,7 +126,7 @@ class _TaskManagerState extends State<TaskManager> {
           ForgetPasswordEmail.name: (_) => const ForgetPasswordEmail(),
           SignInScreen.name: (_) => const SignInScreen(),
           ForgetPasswordOtpVerificationScreen.name: (_) =>
-          const ForgetPasswordOtpVerificationScreen(),
+              const ForgetPasswordOtpVerificationScreen(),
           ResetPasswordScreen.name: (_) => const ResetPasswordScreen(),
           SignUpScreen.name: (_) => const SignUpScreen(),
           AddNewTaskScreen.name: (_) => const AddNewTaskScreen(),
