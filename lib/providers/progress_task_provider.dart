@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/widgets.dart';
 import 'package:task_managment_app/data/models/task_model.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
@@ -20,7 +18,6 @@ class ProgressTaskProvider extends ChangeNotifier {
       if (response.isSuccess) {
         errorMessage = null;
         progressTasks.clear();
-
         List<dynamic> list = response.body["data"];
         for (var t in list) {
           progressTasks.add(TaskModel.fromJson(t));

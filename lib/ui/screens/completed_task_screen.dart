@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:task_managment_app/data/models/task_model.dart';
 import 'package:task_managment_app/providers/completed_task_provider.dart';
+import 'package:task_managment_app/providers/task_count_provider.dart';
 import 'package:task_managment_app/ui/widgets/centered_circular_progrress.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
 import 'package:task_managment_app/ui/widgets/task_card.dart';
@@ -32,6 +33,7 @@ class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
           child: RefreshIndicator(
             onRefresh: () async {
               context.read<CompletedTaskProvider>().getCompletedTasks();
+              context.read<TaskCountProvider>().getTaskCounts();
             },
             child: Visibility(
               visible:

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:task_managment_app/data/models/task_count_model.dart';
 import 'package:task_managment_app/data/models/task_model.dart';
 import 'package:task_managment_app/providers/new_task_provider.dart';
 import 'package:task_managment_app/providers/task_count_provider.dart';
@@ -8,6 +7,7 @@ import 'package:task_managment_app/ui/screens/add_new_task_screen.dart';
 import 'package:task_managment_app/ui/widgets/centered_circular_progrress.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
 import 'package:task_managment_app/ui/widgets/task_card.dart';
+import 'package:task_managment_app/ui/widgets/task_counts_widget.dart';
 
 class NewTaskScreen extends StatefulWidget {
   const NewTaskScreen({super.key});
@@ -23,7 +23,6 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     Future.microtask(() {
       if (mounted) {
         context.read<NewTaskProvider>().getNewTasks();
-        context.read<TaskCountProvider>().getTaskCounts();
       }
     });
     super.initState();
@@ -42,25 +41,6 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
           child: ListView(
             padding: EdgeInsets.all(10),
             children: [
-              Consumer<TaskCountProvider>(
-                builder: (context, provider, child) {
-                  return SizedBox(
-                    height: 70,
-                    child: ListView.separated(
-                      separatorBuilder: (context, index) {
-                        return SizedBox(width: 5);
-                      },
-                      scrollDirection: Axis.horizontal,
-                      itemCount: provider.taskCounts.length,
-                      itemBuilder: (context, index) {
-                        TaskCountModel taskCount = provider.taskCounts[index];
-
-                        return buildTaskSummary(context, taskCount, provider);
-                      },
-                    ),
-                  );
-                },
-              ),
               Consumer<NewTaskProvider>(
                 builder: (context, provider, child) {
                   if (provider.isLoading) {
@@ -106,36 +86,9 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     );
   }
 
-  Container buildTaskSummary(
-    BuildContext context,
-    TaskCountModel taskCount,
-    TaskCountProvider provider,
-  ) {
-    return Container(
-      width: MediaQuery.of(context).size.width / 4 - 5,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              provider.isLoading ? "--" : taskCount.sum.toString(),
-              style: TextTheme.of(
-                context,
-              ).bodyMedium?.copyWith(fontWeight: FontWeight.w800),
-            ),
-            Text(taskCount.id, style: TextTheme.of(context).bodySmall),
-          ],
-        ),
-      ),
-    );
-  }
-
   void _onTapAddTaskButton() {
     Navigator.pushNamed(context, AddNewTaskScreen.name);
   }
 }
+
+
