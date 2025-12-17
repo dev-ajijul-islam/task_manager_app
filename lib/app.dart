@@ -8,6 +8,7 @@ import 'package:task_managment_app/providers/progress_task_provider.dart';
 import 'package:task_managment_app/providers/sign_in_provider.dart';
 import 'package:task_managment_app/providers/sign_up_provider.dart';
 import 'package:task_managment_app/providers/task_count_provider.dart';
+import 'package:task_managment_app/providers/task_delete_provider.dart';
 import 'package:task_managment_app/providers/user_provider.dart';
 import 'package:task_managment_app/ui/screens/add_new_task_screen.dart';
 import 'package:task_managment_app/ui/screens/forget_password_email.dart';
@@ -42,7 +43,8 @@ class _TaskManagerState extends State<TaskManager> {
         ChangeNotifierProvider(create: (_) => CompletedTaskProvider()),
         ChangeNotifierProvider(create: (_) => CanceledTaskProvider()),
         ChangeNotifierProvider(create: (_) => ProgressTaskProvider()),
-        ChangeNotifierProvider(create: (_)=> AddTaskProvider())
+        ChangeNotifierProvider(create: (_) => AddTaskProvider()),
+        ChangeNotifierProvider(create: (_) => TaskDeleteProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

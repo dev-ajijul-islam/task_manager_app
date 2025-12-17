@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:task_managment_app/data/models/task_model.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
+import 'package:task_managment_app/providers/canceled_task_provider.dart';
+import 'package:task_managment_app/providers/completed_task_provider.dart';
+import 'package:task_managment_app/providers/new_task_provider.dart';
+import 'package:task_managment_app/providers/progress_task_provider.dart';
+import 'package:task_managment_app/providers/task_count_provider.dart';
+import 'package:task_managment_app/providers/task_delete_provider.dart';
 import 'package:task_managment_app/ui/widgets/snackbar_message.dart';
 import 'package:task_managment_app/utils/url.dart';
 
 class TaskCard extends StatefulWidget {
   final TaskModel task;
-  final VoidCallback onUpdate;
-  final VoidCallback onDelete;
-  const TaskCard({
-    super.key,
-    required this.task,
-    required this.onUpdate,
-    required this.onDelete,
-  });
+  const TaskCard({super.key, required this.task});
 
   @override
   State<TaskCard> createState() => _TaskCardState();
@@ -77,12 +77,20 @@ class _TaskCardState extends State<TaskCard> {
                       icon: Icon(Icons.edit_note_outlined),
                       color: colorScheme.primary,
                     ),
-                    IconButton(
-                      onPressed: () {
-                        deleteTask(widget.task.id);
+                    Consumer<TaskDeleteProvider>(
+                      builder: (context, provider, child) {
+                        return Visibility(
+                          replacement: CircularProgressIndicator(),
+                          visible: provider.isDeleting == false,
+                          child: IconButton(
+                            onPressed: () {
+                              deleteTask(widget.task.id);
+                            },
+                            icon: const Icon(Icons.delete_outline),
+                            color: Colors.redAccent,
+                          ),
+                        );
                       },
-                      icon: const Icon(Icons.delete_outline),
-                      color: Colors.redAccent,
                     ),
                   ],
                 ),
@@ -168,7 +176,7 @@ class _TaskCardState extends State<TaskCard> {
     if (response.statusCode == 200) {
       snackbarMessgae(context, "Updated successful");
       Navigator.pop(context);
-      widget.onUpdate();
+      _refresh();
     } else {
       snackbarMessgae(context, "${response.body}");
     }
@@ -188,27 +196,43 @@ class _TaskCardState extends State<TaskCard> {
               },
               child: Text("Cancel"),
             ),
-            FilledButton(
-              style: FilledButton.styleFrom(maximumSize: Size(140, 45)),
-              onPressed: () async {
-                NetworkResponse response = await NetworkCaller.getRequest(
-                  Url.deleteUrl(id),
+            Consumer<TaskDeleteProvider>(
+              builder: (context, provider, child) {
+                return Visibility(
+                  replacement: CircularProgressIndicator(),
+                  visible: provider.isDeleting == false,
+                  child: FilledButton(
+                    style: FilledButton.styleFrom(maximumSize: Size(140, 45)),
+                    onPressed: () async {
+                      NetworkResponse response = await provider.deleteTask(
+                        id: id,
+                      );
+                      if (response.isSuccess) {
+                        snackbarMessgae(context, "Task deleted");
+                        Navigator.pop(context);
+                        _refresh();
+                      } else {
+                        snackbarMessgae(context, "${response.body}");
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: Text("Confirm"),
+                  ),
                 );
-                if (response.statusCode == 200) {
-                  snackbarMessgae(context, "Task deleted");
-                  Navigator.pop(context);
-                  widget.onDelete();
-                } else {
-                  snackbarMessgae(context, "${response.body}");
-                  Navigator.pop(context);
-                }
               },
-              child: Text("Confirm"),
             ),
           ],
         );
       },
     );
+  }
+
+  void _refresh() {
+    context.read<NewTaskProvider>().getNewTasks();
+    context.read<CompletedTaskProvider>().getCompletedTasks();
+    context.read<CanceledTaskProvider>().getCanceledTask();
+    context.read<ProgressTaskProvider>().getProgressTasks();
+    context.read<TaskCountProvider>().getTaskCounts();
   }
 
   Color getColorByStatus(String status) {

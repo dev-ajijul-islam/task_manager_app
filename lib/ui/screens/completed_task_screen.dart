@@ -53,12 +53,6 @@ class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
                         TaskModel task = provider.completedTasks[index];
                         return TaskCard(
                           task: task,
-                          onUpdate: () {
-                            provider.getCompletedTasks();
-                          },
-                          onDelete: () {
-                            provider.getCompletedTasks();
-                          },
                         );
                       },
                     );

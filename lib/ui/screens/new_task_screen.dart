@@ -57,14 +57,6 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                       TaskModel task = provider.newTasks[index];
                       return TaskCard(
                         task: task,
-                        onUpdate: () {
-                          provider.getNewTasks();
-                          context.read<TaskCountProvider>();
-                        },
-                        onDelete: () {
-                          provider.getNewTasks();
-                          context.read<TaskCountProvider>();
-                        },
                       );
                     },
                   ),

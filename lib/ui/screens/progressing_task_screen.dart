@@ -6,7 +6,6 @@ import 'package:task_managment_app/providers/task_count_provider.dart';
 import 'package:task_managment_app/ui/widgets/centered_circular_progrress.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
 import 'package:task_managment_app/ui/widgets/task_card.dart';
-import 'package:task_managment_app/ui/widgets/task_counts_widget.dart';
 
 class ProgressingTaskScreen extends StatefulWidget {
   const ProgressingTaskScreen({super.key});
@@ -52,12 +51,6 @@ class _ProgressingTaskScreenState extends State<ProgressingTaskScreen> {
                       TaskModel task = provider.progressTasks[index];
                       return TaskCard(
                         task: task,
-                        onUpdate: () {
-                          provider.getProgressTasks();
-                        },
-                        onDelete: () {
-                          provider.getProgressTasks();
-                        },
                       );
                     },
                   );
