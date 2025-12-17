@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:task_managment_app/providers/sign_in_provider.dart';
+import 'package:task_managment_app/providers/sign_up_provider.dart';
+import 'package:task_managment_app/providers/user_provider.dart';
 import 'package:task_managment_app/ui/screens/add_new_task_screen.dart';
 import 'package:task_managment_app/ui/screens/forget_password_email.dart';
 import 'package:task_managment_app/ui/screens/forget_password_otp_verification_screen.dart';
@@ -26,7 +28,9 @@ class _TaskManagerState extends State<TaskManager> {
 
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => SignInProvider(),)
+        ChangeNotifierProvider(create: (_) => SignInProvider(),),
+        ChangeNotifierProvider(create: (_)=> UserProvider()),
+        ChangeNotifierProvider(create: (_)=> SignUpProvider())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

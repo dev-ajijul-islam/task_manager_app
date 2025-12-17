@@ -1,19 +1,15 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 import 'package:task_managment_app/data/models/user_model.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
+import 'package:task_managment_app/providers/user_provider.dart';
 import 'package:task_managment_app/utils/url.dart';
 
 class SignInProvider extends ChangeNotifier {
   bool signInProgress = false;
-  static String? accessToken;
-  static UserModel? user;
-  static const String _userKey = "user";
-  static const String _tokenKey = "token";
 
   Future<NetworkResponse> signIn({
+    required BuildContext context,
     required String email,
     required String password,
   }) async {
@@ -34,12 +30,13 @@ class SignInProvider extends ChangeNotifier {
       if (response.isSuccess) {
         String token = response.body["token"];
         UserModel user = UserModel.fromJson(response.body["data"]);
-        await saveUserData(token, user);
+        await context.read<UserProvider>().saveUserData(token, user);
         return NetworkResponse(isSuccess: true, statusCode: 200);
       } else {
         return NetworkResponse(
           isSuccess: false,
           statusCode: response.statusCode,
+          errorMessage: "User not found or wrong password",
         );
       }
     } catch (e) {
@@ -49,14 +46,5 @@ class SignInProvider extends ChangeNotifier {
       signInProgress = false;
       notifyListeners();
     }
-  }
-
-  Future<void> saveUserData(String token, UserModel userModel) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_tokenKey, token);
-    await prefs.setString(_userKey, jsonEncode(userModel.toJson()));
-
-    user = userModel;
-    accessToken = token;
   }
 }

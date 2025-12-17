@@ -1,8 +1,11 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
+import 'package:task_managment_app/providers/sign_up_provider.dart';
 import 'package:task_managment_app/ui/screens/forget_password_email.dart';
+import 'package:task_managment_app/ui/screens/main_layout_screen.dart';
 import 'package:task_managment_app/ui/screens/sign_in_screen.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
 import 'package:task_managment_app/utils/url.dart';
@@ -28,7 +31,7 @@ class _SignUpScreen extends State<SignUpScreen> {
   final TextEditingController _mobileTEController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
 
-  bool  isPasswordShow = true;
+  bool isPasswordShow = true;
 
   @override
   void dispose() {
@@ -64,7 +67,10 @@ class _SignUpScreen extends State<SignUpScreen> {
                     TextFormField(
                       controller: _emailTEController,
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "Email",prefixIcon: Icon(Icons.mail_outline)),
+                      decoration: InputDecoration(
+                        hintText: "Email",
+                        prefixIcon: Icon(Icons.mail_outline),
+                      ),
                       validator: (String? value) {
                         if (value?.trim().isEmpty ?? true) {
                           return "Enter email";
@@ -78,7 +84,10 @@ class _SignUpScreen extends State<SignUpScreen> {
                     TextFormField(
                       controller: _firstNameTEController,
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "First name",prefixIcon: Icon(Icons.person_outline)),
+                      decoration: InputDecoration(
+                        hintText: "First name",
+                        prefixIcon: Icon(Icons.person_outline),
+                      ),
                       validator: (String? value) {
                         if (value?.trim().isEmpty ?? true) {
                           return "Enter first name";
@@ -87,10 +96,12 @@ class _SignUpScreen extends State<SignUpScreen> {
                       },
                     ),
                     TextFormField(
-
                       controller: _lastNameTEController,
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "Last name",prefixIcon: Icon(Icons.person_outline)),
+                      decoration: InputDecoration(
+                        hintText: "Last name",
+                        prefixIcon: Icon(Icons.person_outline),
+                      ),
                       validator: (String? value) {
                         if (value?.trim().isEmpty ?? true) {
                           return "Enter last name";
@@ -99,10 +110,12 @@ class _SignUpScreen extends State<SignUpScreen> {
                       },
                     ),
                     TextFormField(
-                      
                       controller: _mobileTEController,
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "Mobile",prefixIcon: Icon(Icons.phone_outlined)),
+                      decoration: InputDecoration(
+                        hintText: "Mobile",
+                        prefixIcon: Icon(Icons.phone_outlined),
+                      ),
                       validator: (String? value) {
                         if (value?.trim().isEmpty ?? true) {
                           return "Enter mobile";
@@ -111,11 +124,12 @@ class _SignUpScreen extends State<SignUpScreen> {
                       },
                     ),
                     TextFormField(
-
                       controller: _passwordTEController,
                       obscureText: isPasswordShow,
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "Password",    prefixIcon: Icon(Icons.lock_outline),
+                      decoration: InputDecoration(
+                        hintText: "Password",
+                        prefixIcon: Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           onPressed: () {
                             setState(() {
@@ -127,7 +141,8 @@ class _SignUpScreen extends State<SignUpScreen> {
                                 ? Icons.visibility_off_outlined
                                 : Icons.visibility_outlined,
                           ),
-                        ),),
+                        ),
+                      ),
                       validator: (String? value) {
                         if (value?.trim().isEmpty ?? true) {
                           return "Enter email";
@@ -139,16 +154,20 @@ class _SignUpScreen extends State<SignUpScreen> {
                       },
                     ),
                     SizedBox(height: 5),
-                    Visibility(
-                      visible: isSignInInProgress == false,
-                      replacement: Center(child: CircularProgressIndicator()),
-                      child: FilledButton(
-                        onPressed: _onTapSignUpButton,
-                        child: Icon(
-                          Icons.arrow_circle_right_outlined,
-                          size: 25,
-                        ),
-                      ),
+                    Consumer<SignUpProvider>(
+                      builder: (context, provider, child) {
+                       return Visibility(
+                          visible: provider.isSignInInProgress == false,
+                          replacement: Center(child: CircularProgressIndicator()),
+                          child: FilledButton(
+                            onPressed: _onTapSignUpButton,
+                            child: Icon(
+                              Icons.arrow_circle_right_outlined,
+                              size: 25,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                     SizedBox(height: 10),
                     Center(
@@ -197,33 +216,28 @@ class _SignUpScreen extends State<SignUpScreen> {
   }
 
   void _onTapSignUpButton() async {
-    setState(() {
-      isSignInInProgress = true;
-    });
     if (_formKey.currentState!.validate()) {
-      Map<String, dynamic> requestBody = {
-        "email": _emailTEController.text,
-        "firstName": _firstNameTEController.text,
-        "lastName": _lastNameTEController.text,
-        "mobile": _mobileTEController.text,
-        "password": _passwordTEController.text,
-      };
-      NetworkResponse response = await NetworkCaller.postRequest(
-        Url.registerUrl,
-        body: requestBody,
+      NetworkResponse response = await context.read<SignUpProvider>().signUp(
+        email: _emailTEController.text.trim(),
+        firstName: _firstNameTEController.text.trim(),
+        lastname: _lastNameTEController.text.trim(),
+        mobile: _mobileTEController.text.trim(),
+        password: _passwordTEController.text,
       );
-
-      if (response.isSuccess) {
-        snackbarMessgae(context, "Registration success");
+      if (response.isSuccess && mounted) {
+        snackbarMessgae(context, "Sign up success");
         _clearForm();
-        Navigator.pushReplacementNamed(context, SignInScreen.name);
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          SignInScreen.name,
+          (predicated) => false,
+        );
       } else {
-        snackbarMessgae(context, response.errorMessage.toString());
+        if (mounted) {
+          snackbarMessgae(context, response.errorMessage.toString());
+        }
       }
     }
-    setState(() {
-      isSignInInProgress = false;
-    });
   }
 
   _clearForm() {
