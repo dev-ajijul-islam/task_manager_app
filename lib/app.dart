@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:task_managment_app/providers/sign_in_provider.dart';
 import 'package:task_managment_app/ui/screens/add_new_task_screen.dart';
 import 'package:task_managment_app/ui/screens/forget_password_email.dart';
 import 'package:task_managment_app/ui/screens/forget_password_otp_verification_screen.dart';
@@ -22,105 +24,110 @@ class _TaskManagerState extends State<TaskManager> {
   Widget build(BuildContext context) {
     final baseColor = Color(0xFFc23616);
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        // ------------ Color Scheme ------------
-        colorScheme: ColorScheme.light(
-          primary: baseColor,
-          secondary: Colors.grey.shade700,
-          surface: Colors.white,
-          onPrimary: Colors.white,
-          onSecondary: Colors.white,
-        ),
-
-        // ------------ AppBar Theme ------------
-        appBarTheme: AppBarTheme(
-          backgroundColor: baseColor,
-          foregroundColor: Colors.white,
-          titleTextStyle: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SignInProvider(),)
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          // ------------ Color Scheme ------------
+          colorScheme: ColorScheme.light(
+            primary: baseColor,
+            secondary: Colors.grey.shade700,
+            surface: Colors.white,
+            onPrimary: Colors.white,
+            onSecondary: Colors.white,
           ),
-          elevation: 2,
-        ),
 
-        // ------------ Input Field Theme ------------
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: Colors.white,
-          contentPadding:
-          const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-          hintStyle: TextStyle(fontSize: 14, color: Colors.grey.shade500),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide.none,
-          ),
-        ),
-
-        // ------------ Button Theme ------------
-        filledButtonTheme: FilledButtonThemeData(
-          style: FilledButton.styleFrom(
+          // ------------ AppBar Theme ------------
+          appBarTheme: AppBarTheme(
             backgroundColor: baseColor,
             foregroundColor: Colors.white,
-            fixedSize: const Size(double.maxFinite, 45),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+            titleTextStyle: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
             ),
-            textStyle: const TextStyle(
+            elevation: 2,
+          ),
+
+          // ------------ Input Field Theme ------------
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: Colors.white,
+            contentPadding:
+            const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+            hintStyle: TextStyle(fontSize: 14, color: Colors.grey.shade500),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none,
+            ),
+          ),
+
+          // ------------ Button Theme ------------
+          filledButtonTheme: FilledButtonThemeData(
+            style: FilledButton.styleFrom(
+              backgroundColor: baseColor,
+              foregroundColor: Colors.white,
+              fixedSize: const Size(double.maxFinite, 45),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              textStyle: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+
+          // ------------ Text Theme ------------
+          textTheme: const TextTheme(
+            bodyLarge: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+            bodyMedium: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
+              color: Colors.black87,
+            ),
+            bodySmall: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+              color: Colors.black54,
+            ),
+            titleMedium: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+            titleSmall: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.black54,
             ),
           ),
         ),
 
-        // ------------ Text Theme ------------
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
-          bodyMedium: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
-          ),
-          bodySmall: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w400,
-            color: Colors.black54,
-          ),
-          titleMedium: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
-          titleSmall: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.black54,
-          ),
-        ),
+        // ------------ Routes ------------
+        routes: {
+          SplashScreen.name: (_) => const SplashScreen(),
+          MainLayoutScreen.name: (_) => const MainLayoutScreen(),
+          ForgetPasswordEmail.name: (_) => const ForgetPasswordEmail(),
+          SignInScreen.name: (_) => const SignInScreen(),
+          ForgetPasswordOtpVerificationScreen.name: (_) =>
+          const ForgetPasswordOtpVerificationScreen(),
+          ResetPasswordScreen.name: (_) => const ResetPasswordScreen(),
+          SignUpScreen.name: (_) => const SignUpScreen(),
+          AddNewTaskScreen.name: (_) => const AddNewTaskScreen(),
+          NewTaskScreen.name: (_) => const NewTaskScreen(),
+          UpdateProfileScreen.name: (_) => const UpdateProfileScreen(),
+        },
+
+        initialRoute: SplashScreen.name,
       ),
-
-      // ------------ Routes ------------
-      routes: {
-        SplashScreen.name: (_) => const SplashScreen(),
-        MainLayoutScreen.name: (_) => const MainLayoutScreen(),
-        ForgetPasswordEmail.name: (_) => const ForgetPasswordEmail(),
-        SignInScreen.name: (_) => const SignInScreen(),
-        ForgetPasswordOtpVerificationScreen.name: (_) =>
-        const ForgetPasswordOtpVerificationScreen(),
-        ResetPasswordScreen.name: (_) => const ResetPasswordScreen(),
-        SignUpScreen.name: (_) => const SignUpScreen(),
-        AddNewTaskScreen.name: (_) => const AddNewTaskScreen(),
-        NewTaskScreen.name: (_) => const NewTaskScreen(),
-        UpdateProfileScreen.name: (_) => const UpdateProfileScreen(),
-      },
-
-      initialRoute: SplashScreen.name,
     );
   }
 }

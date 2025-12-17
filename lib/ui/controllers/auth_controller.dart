@@ -9,13 +9,12 @@ class AuthController {
   static String? accessToken;
   static UserModel? user;
 
-  /// Save user + token after login
   static Future<void> saveUserData(String token, UserModel userModel) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(_tokenKey, token);
     await prefs.setString(_userKey, jsonEncode(userModel.toJson()));
 
-    user = userModel;        // <-- update in memory
+    user = userModel;
     accessToken = token;
   }
 
@@ -24,7 +23,7 @@ class AuthController {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(_userKey, jsonEncode(userModel.toJson()));
 
-    user = userModel;        // <-- important
+    user = userModel;
   }
 
   /// Load user on app start
