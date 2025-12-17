@@ -7,7 +7,6 @@ import 'package:task_managment_app/ui/screens/add_new_task_screen.dart';
 import 'package:task_managment_app/ui/widgets/centered_circular_progrress.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
 import 'package:task_managment_app/ui/widgets/task_card.dart';
-import 'package:task_managment_app/ui/widgets/task_counts_widget.dart';
 
 class NewTaskScreen extends StatefulWidget {
   const NewTaskScreen({super.key});

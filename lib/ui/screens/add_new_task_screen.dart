@@ -1,15 +1,11 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
-import 'package:task_managment_app/ui/screens/forget_password_email.dart';
-import 'package:task_managment_app/ui/screens/main_layout_screen.dart';
-import 'package:task_managment_app/ui/screens/new_task_screen.dart';
-import 'package:task_managment_app/ui/screens/sign_up_screen.dart';
+import 'package:task_managment_app/providers/add_task_provider.dart';
 import 'package:task_managment_app/ui/widgets/app_bar_widget.dart';
 import 'package:task_managment_app/ui/widgets/centered_circular_progrress.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
 import 'package:task_managment_app/ui/widgets/snackbar_message.dart';
-import 'package:task_managment_app/utils/url.dart';
 
 class AddNewTaskScreen extends StatefulWidget {
   const AddNewTaskScreen({super.key});
@@ -57,7 +53,10 @@ class _AddNewTaskScreen extends State<AddNewTaskScreen> {
                         return null;
                       },
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "Subject",prefixIcon: Icon(Icons.note_add_outlined)),
+                      decoration: InputDecoration(
+                        hintText: "Subject",
+                        prefixIcon: Icon(Icons.note_add_outlined),
+                      ),
                     ),
                     TextFormField(
                       controller: _descriptionTEController,
@@ -69,19 +68,26 @@ class _AddNewTaskScreen extends State<AddNewTaskScreen> {
                         return null;
                       },
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "Description",prefixIcon: Icon(Icons.document_scanner_outlined)),
+                      decoration: InputDecoration(
+                        hintText: "Description",
+                        prefixIcon: Icon(Icons.document_scanner_outlined),
+                      ),
                     ),
                     SizedBox(height: 5),
-                    Visibility(
-                      visible: isAddTaskInProgress == false,
-                      replacement: CenteredCircularProgrress(),
-                      child: FilledButton(
-                        onPressed: _onTapAddNewTask,
-                        child: Icon(
-                          Icons.arrow_circle_right_outlined,
-                          size: 25,
-                        ),
-                      ),
+                    Consumer<AddTaskProvider>(
+                      builder: (context, provider, child) {
+                        return Visibility(
+                          visible: provider.isAdding == false,
+                          replacement: CenteredCircularProgrress(),
+                          child: FilledButton(
+                            onPressed: _onTapAddNewTask,
+                            child: Icon(
+                              Icons.arrow_circle_right_outlined,
+                              size: 25,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -93,41 +99,36 @@ class _AddNewTaskScreen extends State<AddNewTaskScreen> {
     );
   }
 
-  void _onTapAddNewTask() async {
+  Future<void> _onTapAddNewTask() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        isAddTaskInProgress = true;
-      });
-      Map<String, dynamic> requestBody = {
-        "title": _titleTEController.text,
-        "description": _descriptionTEController.text,
-        "status": "New",
-      };
-      NetworkResponse response = await NetworkCaller.postRequest(
-        Url.createTaskUrl,
-        body: requestBody,
-      );
-
-      if (response.isSuccess) {
-        snackbarMessgae(context, "Task added successfully");
-        _clearForm();
-      } else {
-        snackbarMessgae(context, response.errorMessage.toString());
+      if (mounted) {
+        NetworkResponse response = await context
+            .read<AddTaskProvider>()
+            .addTask(
+              title: _titleTEController.text.trim(),
+              description: _descriptionTEController.text.trim(),
+            );
+        if (response.isSuccess) {
+          _clearForm();
+          if (mounted) {
+            snackbarMessgae(context, "New task added successfully");
+          }
+        } else {
+          if (mounted) {
+            snackbarMessgae(context, response.errorMessage.toString());
+          }
+        }
       }
-      setState(() {
-        isAddTaskInProgress = false;
-      });
     }
   }
 
-  _clearForm(){
+  _clearForm() {
     _titleTEController.clear();
     _descriptionTEController.clear();
   }
 
   @override
   void dispose() {
-
     _titleTEController.dispose();
     _descriptionTEController.dispose();
     super.dispose();
