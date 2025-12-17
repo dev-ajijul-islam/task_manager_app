@@ -3,8 +3,10 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:task_managment_app/data/models/user_model.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
+import 'package:task_managment_app/providers/user_provider.dart';
 import 'package:task_managment_app/ui/controllers/auth_controller.dart';
 import 'package:task_managment_app/ui/widgets/app_bar_widget.dart';
 import 'package:task_managment_app/ui/widgets/centered_circular_progrress.dart';
@@ -38,12 +40,15 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
 
   @override
   void initState() {
-    UserModel? userModel = AuthController.user;
-
-    _emailTEController.text = userModel!.email;
-    _firtNamelTEController.text = userModel.firstName;
-    _lastNameTEController.text = userModel.lastName;
-    _mobileTEController.text = userModel.mobile;
+    Future.microtask(() {
+      if (mounted) {
+        UserModel? userModel = context.read<UserProvider>().user;
+        _emailTEController.text = userModel!.email;
+        _firtNamelTEController.text = userModel.firstName;
+        _lastNameTEController.text = userModel.lastName;
+        _mobileTEController.text = userModel.mobile;
+      }
+    });
     super.initState();
   }
 
@@ -66,7 +71,7 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
                     CircleAvatar(
                       radius: 60,
                       backgroundImage: MemoryImage(
-                        base64Decode(AuthController.user!.photo!),
+                        base64Decode(provider.user!.photo!),
                       ),
                     ),
                     SizedBox(height: 5),
@@ -127,8 +132,10 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
                       },
                       controller: _emailTEController,
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "Email",
-                      prefixIcon: Icon(Icons.mail_outline)),
+                      decoration: InputDecoration(
+                        hintText: "Email",
+                        prefixIcon: Icon(Icons.mail_outline),
+                      ),
                     ),
                     TextFormField(
                       validator: (value) {
@@ -139,8 +146,10 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
                       },
                       controller: _firtNamelTEController,
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "First name",
-                      prefixIcon: Icon(Icons.person_outline)),
+                      decoration: InputDecoration(
+                        hintText: "First name",
+                        prefixIcon: Icon(Icons.person_outline),
+                      ),
                     ),
                     TextFormField(
                       validator: (value) {
@@ -151,8 +160,10 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
                       },
                       controller: _lastNameTEController,
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "Last name",
-                      prefixIcon: Icon(Icons.person_outline)),
+                      decoration: InputDecoration(
+                        hintText: "Last name",
+                        prefixIcon: Icon(Icons.person_outline),
+                      ),
                     ),
                     TextFormField(
                       validator: (value) {
@@ -167,8 +178,9 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
                       keyboardType: TextInputType.phone,
                       controller: _mobileTEController,
                       style: TextStyle(fontSize: 14),
-                      decoration: InputDecoration(hintText: "Mobile",
-                        prefixIcon: Icon(Icons.phone_outlined)
+                      decoration: InputDecoration(
+                        hintText: "Mobile",
+                        prefixIcon: Icon(Icons.phone_outlined),
                       ),
                     ),
                     TextFormField(
@@ -227,6 +239,7 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
   }
 
   Future<void> _updateProfile() async {
+    final provider = context.read<UserProvider>();
     setState(() {
       updateInProgress = true;
     });
@@ -252,8 +265,8 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
     );
 
     if (response.isSuccess) {
-      await AuthController.updateUserData(UserModel.fromJson(requestBody));
-      await AuthController.getUserData();
+      await provider.updateUserData(UserModel.fromJson(requestBody));
+      await provider.getUserData();
       snackbarMessgae(context, "Profile Updated");
       setState(() {});
     } else {

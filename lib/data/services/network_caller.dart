@@ -12,7 +12,7 @@ class NetworkCaller {
 
     try {
       Response response = await get(url,headers: {
-        "token": AuthController.accessToken ?? "",
+        "token": provider.accessToken ?? "",
       });
 
       _logResponse(uri, response: response);
@@ -56,7 +56,7 @@ class NetworkCaller {
         body: jsonEncode(body),
         headers: {
           "Content-Type": "application/json",
-          "token": AuthController.accessToken ?? "",
+          "token": provider.accessToken ?? "",
         },
       );
 
