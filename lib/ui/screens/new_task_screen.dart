@@ -38,48 +38,40 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
       ),
       body: ScreenBackground(
         child: Center(
-          child: ListView(
-            padding: EdgeInsets.all(10),
-            children: [
-              Consumer<NewTaskProvider>(
-                builder: (context, provider, child) {
-                  if (provider.isLoading) {
-                    return CenteredCircularProgrress();
-                  } else if (provider.errorMessage != null) {
-                    return Center(child: Text(provider.errorMessage.toString()));
-                  }else if(provider.newTasks.isEmpty){
-                    return Center(child: Text("Tasks not found"),);
-                  } else {
-                    return SizedBox(
-                      height: MediaQuery.of(context).size.height - 230,
-                      child: RefreshIndicator(
-                        onRefresh: () async {
+          child: Consumer<NewTaskProvider>(
+            builder: (context, provider, child) {
+              if (provider.isLoading) {
+                return CenteredCircularProgrress();
+              } else if (provider.errorMessage != null) {
+                return Center(child: Text(provider.errorMessage.toString()));
+              } else if (provider.newTasks.isEmpty) {
+                return Center(child: Text("Tasks not found"));
+              } else {
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    provider.getNewTasks();
+                    context.read<TaskCountProvider>().getTaskCounts();
+                  },
+                  child: ListView.builder(
+                    itemCount: provider.newTasks.length,
+                    itemBuilder: (context, index) {
+                      TaskModel task = provider.newTasks[index];
+                      return TaskCard(
+                        task: task,
+                        onUpdate: () {
                           provider.getNewTasks();
-                          context.read<TaskCountProvider>().getTaskCounts();
+                          context.read<TaskCountProvider>();
                         },
-                        child: ListView.builder(
-                          itemCount: provider.newTasks.length,
-                          itemBuilder: (context, index) {
-                            TaskModel task = provider.newTasks[index];
-                            return TaskCard(
-                              task: task,
-                              onUpdate: () {
-                                provider.getNewTasks();
-                                context.read<TaskCountProvider>();
-                              },
-                              onDelete: () {
-                                provider.getNewTasks();
-                                context.read<TaskCountProvider>();
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    );
-                  }
-                },
-              ),
-            ],
+                        onDelete: () {
+                          provider.getNewTasks();
+                          context.read<TaskCountProvider>();
+                        },
+                      );
+                    },
+                  ),
+                );
+              }
+            },
           ),
         ),
       ),
@@ -90,5 +82,3 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     Navigator.pushNamed(context, AddNewTaskScreen.name);
   }
 }
-
-
