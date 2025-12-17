@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:task_managment_app/providers/canceled_task_provider.dart';
 import 'package:task_managment_app/providers/completed_task_provider.dart';
 import 'package:task_managment_app/providers/new_task_provider.dart';
+import 'package:task_managment_app/providers/progress_task_provider.dart';
 import 'package:task_managment_app/providers/sign_in_provider.dart';
 import 'package:task_managment_app/providers/sign_up_provider.dart';
 import 'package:task_managment_app/providers/task_count_provider.dart';
@@ -39,6 +40,7 @@ class _TaskManagerState extends State<TaskManager> {
         ChangeNotifierProvider(create: (_) => TaskCountProvider()),
         ChangeNotifierProvider(create: (_) => CompletedTaskProvider()),
         ChangeNotifierProvider(create: (_) => CanceledTaskProvider()),
+        ChangeNotifierProvider(create: (_) => ProgressTaskProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
