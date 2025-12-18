@@ -4,10 +4,12 @@ import 'package:task_managment_app/data/models/task_model.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
 import 'package:task_managment_app/providers/canceled_task_provider.dart';
 import 'package:task_managment_app/providers/completed_task_provider.dart';
+import 'package:task_managment_app/providers/edit_task_provider.dart';
 import 'package:task_managment_app/providers/new_task_provider.dart';
 import 'package:task_managment_app/providers/progress_task_provider.dart';
 import 'package:task_managment_app/providers/task_count_provider.dart';
 import 'package:task_managment_app/providers/task_delete_provider.dart';
+import 'package:task_managment_app/ui/controllers/auth_controller.dart';
 import 'package:task_managment_app/ui/widgets/snackbar_message.dart';
 import 'package:task_managment_app/utils/url.dart';
 
@@ -119,45 +121,94 @@ class _TaskCardState extends State<TaskCard> {
                 color: Colors.black,
               ),
             ),
-            child: Column(
-              spacing: 5,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  onTap: () {
-                    _updateStatus(widget.task.id, "New");
-                  },
-                  title: Text("New"),
-                  trailing: _isCuurrentStatus("New") ? Icon(Icons.done) : null,
-                ),
-                ListTile(
-                  onTap: () {
-                    _updateStatus(widget.task.id, "Completed");
-                  },
-                  title: Text("Completed"),
-                  trailing: _isCuurrentStatus("Completed")
-                      ? Icon(Icons.done)
-                      : null,
-                ),
-                ListTile(
-                  onTap: () {
-                    _updateStatus(widget.task.id, "Canceled");
-                  },
-                  title: Text("Canceled"),
-                  trailing: _isCuurrentStatus("Canceled")
-                      ? Icon(Icons.done)
-                      : null,
-                ),
-                ListTile(
-                  onTap: () {
-                    _updateStatus(widget.task.id, "Progress");
-                  },
-                  title: Text("Progress"),
-                  trailing: _isCuurrentStatus("Progress")
-                      ? Icon(Icons.done)
-                      : null,
-                ),
-              ],
+            child: Consumer<EditTaskProvider>(
+              builder: (context, EditTaskProvider provider, child) {
+                return Column(
+                  spacing: 5,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ListTile(
+                      onTap: () async {
+                        await provider
+                            .editTask(id: widget.task.id, status: "New")
+                            .then((value) => Navigator.pop(context));
+                        _refresh();
+                      },
+                      title: Text("New"),
+                      trailing:
+                          provider.isEditing && provider.isUpdating == "New"
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : _isCuurrentStatus("New")
+                          ? const Icon(Icons.done)
+                          : null,
+                    ),
+                    ListTile(
+                      onTap: () async {
+                        provider
+                            .editTask(id: widget.task.id, status: "Completed")
+                            .then((value) => Navigator.pop(context));
+                        _refresh();
+                      },
+                      title: Text("Completed"),
+                      trailing:
+                          provider.isEditing &&
+                              provider.isUpdating == "Completed"
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : _isCuurrentStatus("Completed")
+                          ? const Icon(Icons.done)
+                          : null,
+                    ),
+                    ListTile(
+                      onTap: () async {
+                        await provider
+                            .editTask(id: widget.task.id, status: "Canceled")
+                            .then((value) => Navigator.pop(context));
+                        _refresh();
+                      },
+                      title: Text("Canceled"),
+                      trailing:
+                          provider.isEditing &&
+                              provider.isUpdating == "Canceled"
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : _isCuurrentStatus("Canceled")
+                          ? const Icon(Icons.done)
+                          : null,
+                    ),
+                    ListTile(
+                      onTap: () async {
+                        await provider
+                            .editTask(id: widget.task.id, status: "Progress")
+                            .then((value) => Navigator.pop(context));
+                        _refresh();
+                      },
+                      title: Text("Progress"),
+                      trailing:
+                          provider.isEditing &&
+                              provider.isUpdating == "Progress"
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : _isCuurrentStatus("Progress")
+                          ? const Icon(Icons.done)
+                          : null,
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         );
@@ -169,18 +220,18 @@ class _TaskCardState extends State<TaskCard> {
     return widget.task.status == status;
   }
 
-  Future<void> _updateStatus(id, status) async {
-    NetworkResponse response = await NetworkCaller.getRequest(
-      Url.updateUrl(id, status),
-    );
-    if (response.statusCode == 200) {
-      snackbarMessgae(context, "Updated successful");
-      Navigator.pop(context);
-      _refresh();
-    } else {
-      snackbarMessgae(context, "${response.body}");
-    }
-  }
+  // Future<void> _updateStatus(id, status) async {
+  //   NetworkResponse response = await NetworkCaller.getRequest(
+  //     Url.updateUrl(id, status),
+  //   );
+  //   if (response.statusCode == 200) {
+  //     snackbarMessgae(context, "Updated successful");
+  //     Navigator.pop(context);
+  //     _refresh();
+  //   } else {
+  //     snackbarMessgae(context, "${response.body}");
+  //   }
+  // }
 
   Future<void> deleteTask(id) async {
     showDialog(

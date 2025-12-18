@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
 import 'package:task_managment_app/providers/add_task_provider.dart';
+import 'package:task_managment_app/providers/canceled_task_provider.dart';
+import 'package:task_managment_app/providers/completed_task_provider.dart';
+import 'package:task_managment_app/providers/new_task_provider.dart';
+import 'package:task_managment_app/providers/progress_task_provider.dart';
+import 'package:task_managment_app/providers/task_count_provider.dart';
 import 'package:task_managment_app/ui/widgets/app_bar_widget.dart';
 import 'package:task_managment_app/ui/widgets/centered_circular_progrress.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
@@ -113,6 +118,7 @@ class _AddNewTaskScreen extends State<AddNewTaskScreen> {
           if (mounted) {
             snackbarMessgae(context, "New task added successfully");
           }
+          _refresh();
         } else {
           if (mounted) {
             snackbarMessgae(context, response.errorMessage.toString());
@@ -127,10 +133,21 @@ class _AddNewTaskScreen extends State<AddNewTaskScreen> {
     _descriptionTEController.clear();
   }
 
+
+
+
+  void _refresh() {
+    context.read<NewTaskProvider>().getNewTasks();
+    context.read<TaskCountProvider>().getTaskCounts();
+  }
+
   @override
   void dispose() {
     _titleTEController.dispose();
     _descriptionTEController.dispose();
     super.dispose();
   }
+
+
+
 }
