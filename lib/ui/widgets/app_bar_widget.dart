@@ -29,18 +29,15 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
                 spacing: 10,
                 children: [
                   CircleAvatar(
-                    radius: 22,
-                    backgroundColor: ColorScheme.of(context).secondary,
-                    backgroundImage: userImage,
-                    child: userImage == null
-                        ? Text(
-                            initials,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )
+                    backgroundImage:
+                        (provider.user?.photo != null &&
+                            provider.user!.photo!.isNotEmpty)
+                        ? MemoryImage(base64Decode(provider.user!.photo!))
+                        : null,
+                    child:
+                        (provider.user?.photo == null ||
+                            provider.user!.photo!.isEmpty)
+                        ? const Icon(Icons.person, size: 60)
                         : null,
                   ),
 
