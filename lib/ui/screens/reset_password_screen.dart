@@ -1,12 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
-import 'package:task_managment_app/ui/screens/main_layout_screen.dart';
+import 'package:task_managment_app/providers/reset_password_provider.dart';
 import 'package:task_managment_app/ui/screens/sign_in_screen.dart';
 import 'package:task_managment_app/ui/widgets/centered_circular_progrress.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
 import 'package:task_managment_app/ui/widgets/snackbar_message.dart';
-import 'package:task_managment_app/utils/url.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
@@ -27,7 +27,7 @@ class _ResetPasswordScreen extends State<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic>? args =
+    final Map<String, dynamic> args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     return Scaffold(
       body: ScreenBackground(
@@ -111,16 +111,21 @@ class _ResetPasswordScreen extends State<ResetPasswordScreen> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    Visibility(
-                      visible: isLoading == false,
-                      replacement: CenteredCircularProgrress(),
-                      child: FilledButton(
-                        onPressed: () {
-                          _onTapConfirmButton(args);
-                        },
-                        child: Text("Confirm"),
-                      ),
+                    Consumer<ResetPasswordProvider>(
+                      builder: (context, provider, child) {
+                        return Visibility(
+                          visible: provider.isResting == false,
+                          replacement: CenteredCircularProgrress(),
+                          child: FilledButton(
+                            onPressed: () {
+                              _onTapConfirmButton(args);
+                            },
+                            child: Text("Confirm"),
+                          ),
+                        );
+                      },
                     ),
+
                     SizedBox(height: 10),
                     Center(
                       child: Column(
@@ -158,32 +163,29 @@ class _ResetPasswordScreen extends State<ResetPasswordScreen> {
   }
 
   Future<void> _onTapConfirmButton(args) async {
-    setState(() {
-      isLoading = true;
-    });
     if (_formKey.currentState!.validate()) {
-      NetworkResponse response = await NetworkCaller.postRequest(
-        Url.resetPasswordUrl,
-        body: {
-          "email": args["email"],
-          "OTP": args["pin"],
-          "password": _passwordController.text,
-        },
-      );
+      NetworkResponse response = await context
+          .read<ResetPasswordProvider>()
+          .resetPassword(
+            email: args["email"],
+            otp: args["pin"],
+            password: _passwordController.text,
+          );
       if (response.isSuccess) {
-        snackbarMessgae(context, "Password reset success");
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          SignInScreen.name,
-          (route) => false,
-        );
+        if (mounted) {
+          snackbarMessgae(context, "Password reset success");
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            SignInScreen.name,
+            (route) => false,
+          );
+        }
       } else {
-        snackbarMessgae(context, response.errorMessage.toString());
+        if (mounted) {
+          snackbarMessgae(context, response.errorMessage.toString());
+        }
       }
     }
-    setState(() {
-      isLoading = false;
-    });
   }
 
   void _onTapSignIn() {

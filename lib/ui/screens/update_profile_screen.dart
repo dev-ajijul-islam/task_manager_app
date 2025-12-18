@@ -271,10 +271,11 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
           .updateProfile(requestBody: requestBody);
 
       if (response.isSuccess) {
-        context.read<UserProvider>().updateUserData(UserModel.fromJson(requestBody));
-        snackbarMessgae(context, "User Profile update");
-      }
-      {
+        await context.read<UserProvider>().updateUserData(
+          UserModel.fromJson(requestBody),
+        );
+        snackbarMessgae(context, "User Profile updated");
+      } else {
         snackbarMessgae(context, response.errorMessage.toString());
       }
     }

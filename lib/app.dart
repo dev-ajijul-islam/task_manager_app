@@ -8,6 +8,7 @@ import 'package:task_managment_app/providers/email_reset_provider.dart';
 import 'package:task_managment_app/providers/new_task_provider.dart';
 import 'package:task_managment_app/providers/otp_pin_verification_provider.dart';
 import 'package:task_managment_app/providers/progress_task_provider.dart';
+import 'package:task_managment_app/providers/reset_password_provider.dart';
 import 'package:task_managment_app/providers/sign_in_provider.dart';
 import 'package:task_managment_app/providers/sign_up_provider.dart';
 import 'package:task_managment_app/providers/task_count_provider.dart';
@@ -52,7 +53,8 @@ class _TaskManagerState extends State<TaskManager> {
         ChangeNotifierProvider(create: (_)=> EditTaskProvider()),
         ChangeNotifierProvider(create: (_)=> UpdateProfileProvider()),
         ChangeNotifierProvider(create: (_)=> EmailResetProvider()),
-        ChangeNotifierProvider(create: (_)=> OtpPinVerificationProvider())
+        ChangeNotifierProvider(create: (_)=> OtpPinVerificationProvider()),
+        ChangeNotifierProvider(create: (_)=> ResetPasswordProvider())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
