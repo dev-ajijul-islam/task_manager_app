@@ -11,7 +11,6 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return AppBar(
       foregroundColor: Colors.white,
       backgroundColor: ColorScheme.of(context).primary,
