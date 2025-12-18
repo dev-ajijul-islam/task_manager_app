@@ -36,7 +36,7 @@ class TaskManager extends StatefulWidget {
 class _TaskManagerState extends State<TaskManager> {
   @override
   Widget build(BuildContext context) {
-    final baseColor = Color(0xFFc23616);
+    final baseColor = Color(0xFF930405);
 
     return MultiProvider(
       providers: [

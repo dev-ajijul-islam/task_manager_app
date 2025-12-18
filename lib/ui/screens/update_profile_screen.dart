@@ -68,6 +68,7 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
                       children: [
                         CircleAvatar(
                           radius: 60,
+                          backgroundColor: Colors.grey,
                           backgroundImage:
                               (provider.user?.photo != null &&
                                   provider.user!.photo!.isNotEmpty)
