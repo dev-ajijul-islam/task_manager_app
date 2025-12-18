@@ -1,13 +1,14 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:provider/provider.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
+import 'package:task_managment_app/providers/otp_pin_verification_provider.dart';
 import 'package:task_managment_app/ui/screens/reset_password_screen.dart';
 import 'package:task_managment_app/ui/screens/sign_in_screen.dart';
 import 'package:task_managment_app/ui/widgets/centered_circular_progrress.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
 import 'package:task_managment_app/ui/widgets/snackbar_message.dart';
-import 'package:task_managment_app/utils/url.dart';
 
 class ForgetPasswordOtpVerificationScreen extends StatefulWidget {
   const ForgetPasswordOtpVerificationScreen({super.key});
@@ -23,8 +24,6 @@ class _ForgetPasswordOtpVerificationScreen
     extends State<ForgetPasswordOtpVerificationScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _pinController = TextEditingController();
-
-  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -94,15 +93,19 @@ class _ForgetPasswordOtpVerificationScreen
                     appContext: context,
                   ),
                   SizedBox(height: 5),
-                  Visibility(
-                    visible: isLoading == false,
-                    replacement: CenteredCircularProgrress(),
-                    child: FilledButton(
-                      onPressed: () {
-                        _onTapSubmitVerifyButton(email);
-                      },
-                      child: Text("Verify"),
-                    ),
+                  Consumer<OtpPinVerificationProvider>(
+                    builder: (context, provider, child) {
+                      return Visibility(
+                        visible: provider.isVerifying == false,
+                        replacement: CenteredCircularProgrress(),
+                        child: FilledButton(
+                          onPressed: () {
+                            _onTapSubmitVerifyButton(email);
+                          },
+                          child: Text("Verify"),
+                        ),
+                      );
+                    },
                   ),
                   SizedBox(height: 10),
                   Center(
@@ -138,28 +141,26 @@ class _ForgetPasswordOtpVerificationScreen
   }
 
   Future<void> _onTapSubmitVerifyButton(email) async {
-    setState(() {
-      isLoading = true;
-    });
     if (_formKey.currentState!.validate()) {
-      NetworkResponse response = await NetworkCaller.getRequest(
-        Url.verifyOtpUrl(email, _pinController.text),
-      );
+      NetworkResponse response = await context
+          .read<OtpPinVerificationProvider>()
+          .sendOTP(email: email, code: _pinController.text);
 
       if (response.isSuccess) {
-        snackbarMessgae(context, "Email Verification success");
-        Navigator.pushNamed(
-          context,
-          ResetPasswordScreen.name,
-          arguments: {"email": email, "pin": _pinController.text},
-        );
+        if (mounted) {
+          snackbarMessgae(context, "Email Verification success");
+          Navigator.pushNamed(
+            context,
+            ResetPasswordScreen.name,
+            arguments: {"email": email, "pin": _pinController.text},
+          );
+        }
       } else {
-        snackbarMessgae(context, response.errorMessage.toString());
+        if (mounted) {
+          snackbarMessgae(context, response.errorMessage.toString());
+        }
       }
     }
-    setState(() {
-      isLoading = false;
-    });
   }
 
   void _onTapSignIn() {
