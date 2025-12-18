@@ -11,8 +11,6 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    ImageProvider? userImage = _getUserImage();
-    String initials = _getInitials();
 
     return AppBar(
       foregroundColor: Colors.white,
@@ -82,30 +80,6 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
         ),
       ],
     );
-  }
-
-  ImageProvider? _getUserImage() {
-    final photo = provider.user?.photo;
-
-    if (photo == null || photo.isEmpty) return null;
-
-    try {
-      return MemoryImage(base64Decode(photo));
-    } catch (_) {
-      return null;
-    }
-  }
-
-  String _getInitials() {
-    final f = provider.user?.firstName.isNotEmpty == true
-        ? provider.user!.firstName[0]
-        : "A";
-
-    final l = provider.user?.lastName.isNotEmpty == true
-        ? provider.user!.lastName[0]
-        : "I";
-
-    return (f + l).toUpperCase();
   }
 
   @override
