@@ -66,7 +66,7 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
           builder: (context, UserProvider provider, child) {
             return IconButton(
               onPressed: () async {
-                provider.clearUserData;
+                await provider.clearUserData();
                 Navigator.pushNamedAndRemoveUntil(
                   context,
                   SignInScreen.name,
