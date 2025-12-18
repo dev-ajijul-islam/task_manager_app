@@ -5,7 +5,7 @@ import 'package:task_managment_app/utils/url.dart';
 class EmailResetProvider extends ChangeNotifier {
   bool isReseting = false;
 
-  Future<NetworkResponse> onTapSubmitEmailButton({
+  Future<NetworkResponse> resetEmail({
     required String email,
   }) async {
     isReseting = true;

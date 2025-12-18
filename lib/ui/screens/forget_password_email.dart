@@ -1,12 +1,13 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
+import 'package:task_managment_app/providers/email_reset_provider.dart';
 import 'package:task_managment_app/ui/screens/forget_password_otp_verification_screen.dart';
 import 'package:task_managment_app/ui/screens/sign_in_screen.dart';
 import 'package:task_managment_app/ui/widgets/centered_circular_progrress.dart';
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
 import 'package:task_managment_app/ui/widgets/snackbar_message.dart';
-import 'package:task_managment_app/utils/url.dart';
 
 class ForgetPasswordEmail extends StatefulWidget {
   const ForgetPasswordEmail({super.key});
@@ -19,11 +20,7 @@ class ForgetPasswordEmail extends StatefulWidget {
 
 class _ForgetPasswordEmailState extends State<ForgetPasswordEmail> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
   final TextEditingController _emailController = TextEditingController();
-
-  bool isLoading = false;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,16 +57,26 @@ class _ForgetPasswordEmailState extends State<ForgetPasswordEmail> {
                     },
                     controller: _emailController,
                     style: TextStyle(fontSize: 14),
-                    decoration: InputDecoration(hintText: "Email",prefixIcon: Icon(Icons.mail_outline)),
+                    decoration: InputDecoration(
+                      hintText: "Email",
+                      prefixIcon: Icon(Icons.mail_outline),
+                    ),
                   ),
                   SizedBox(height: 5),
-                  Visibility(
-                    visible: isLoading == false,
-                    replacement: CenteredCircularProgrress(),
-                    child: FilledButton(
-                      onPressed: _onTapSubmitEmailButton,
-                      child: Icon(Icons.arrow_circle_right_outlined, size: 25),
-                    ),
+                  Consumer<EmailResetProvider>(
+                    builder: (context, provider, child) {
+                      return Visibility(
+                        visible: provider.isReseting == false,
+                        replacement: CenteredCircularProgrress(),
+                        child: FilledButton(
+                          onPressed: _onTapSubmitEmailButton,
+                          child: Icon(
+                            Icons.arrow_circle_right_outlined,
+                            size: 25,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                   SizedBox(height: 10),
                   Center(
@@ -105,28 +112,26 @@ class _ForgetPasswordEmailState extends State<ForgetPasswordEmail> {
   }
 
   Future<void> _onTapSubmitEmailButton() async {
-    setState(() {
-      isLoading = true;
-    });
     if (_formKey.currentState!.validate()) {
-      NetworkResponse response = await NetworkCaller.getRequest(
-        Url.recoveryEmailUrl(_emailController.text.trim()),
-      );
+      NetworkResponse response = await context
+          .read<EmailResetProvider>()
+          .resetEmail(email: _emailController.text.trim());
 
-      if (response.statusCode == 200) {
-        snackbarMessgae(context, response.body["data"]);
-        Navigator.pushNamed(
-          context,
-          ForgetPasswordOtpVerificationScreen.name,
-          arguments: _emailController.text,
-        );
+      if (response.isSuccess) {
+        if (mounted) {
+          snackbarMessgae(context, response.body["data"]);
+          Navigator.pushNamed(
+            context,
+            ForgetPasswordOtpVerificationScreen.name,
+            arguments: _emailController.text,
+          );
+        }
       } else {
-        snackbarMessgae(context, response.errorMessage.toString());
+        if (mounted) {
+          snackbarMessgae(context, response.errorMessage.toString());
+        }
       }
     }
-    setState(() {
-      isLoading = false;
-    });
   }
 
   void _onTapSignIn() {
