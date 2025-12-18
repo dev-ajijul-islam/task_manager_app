@@ -11,11 +11,14 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String? currentRoute = ModalRoute.of(context)!.settings.name;
     return AppBar(
       foregroundColor: Colors.white,
       backgroundColor: ColorScheme.of(context).primary,
       title: GestureDetector(
+
         onTap: () {
+          if(currentRoute == UpdateProfileScreen.name) return;
           Navigator.pushNamed(context, UpdateProfileScreen.name);
         },
         child: Consumer<UserProvider>(
@@ -34,7 +37,7 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
                     child:
                         (provider.user?.photo == null ||
                             provider.user!.photo!.isEmpty)
-                        ? const Icon(Icons.person, size: 60)
+                        ? const Icon(Icons.person, size: 20,)
                         : null,
                   ),
 
