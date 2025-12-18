@@ -25,6 +25,7 @@ class UserProvider extends ChangeNotifier {
     await prefs.setString(_userKey, jsonEncode(userModel.toJson()));
 
     user = userModel;
+    notifyListeners();
   }
 
   Future<void> getUserData() async {

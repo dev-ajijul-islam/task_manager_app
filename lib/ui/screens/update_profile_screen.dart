@@ -6,13 +6,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:task_managment_app/data/models/user_model.dart';
 import 'package:task_managment_app/data/services/network_caller.dart';
+import 'package:task_managment_app/providers/update_profile_provider.dart';
 import 'package:task_managment_app/providers/user_provider.dart';
 import 'package:task_managment_app/ui/widgets/app_bar_widget.dart';
 import 'package:task_managment_app/ui/widgets/centered_circular_progrress.dart';
-
 import 'package:task_managment_app/ui/widgets/screen_backgrond.dart';
 import 'package:task_managment_app/ui/widgets/snackbar_message.dart';
-import 'package:task_managment_app/utils/url.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
   const UpdateProfileScreen({super.key});
@@ -25,8 +24,6 @@ class UpdateProfileScreen extends StatefulWidget {
 
 class _UpdateProfileScreen extends State<UpdateProfileScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  bool updateInProgress = false;
 
   XFile? image;
   final TextEditingController _emailTEController = TextEditingController();
@@ -224,16 +221,20 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
                           ),
                         ),
                         SizedBox(height: 5),
-                        Visibility(
-                          visible: updateInProgress == false,
-                          replacement: CenteredCircularProgrress(),
-                          child: FilledButton(
-                            onPressed: _onTapSignUpButton,
-                            child: Icon(
-                              Icons.arrow_circle_right_outlined,
-                              size: 25,
-                            ),
-                          ),
+                        Consumer<UpdateProfileProvider>(
+                          builder: (context, provider, child) {
+                            return Visibility(
+                              visible: provider.isUpdating == false,
+                              replacement: CenteredCircularProgrress(),
+                              child: FilledButton(
+                                onPressed: _onTapSignUpButton,
+                                child: Icon(
+                                  Icons.arrow_circle_right_outlined,
+                                  size: 25,
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -247,49 +248,36 @@ class _UpdateProfileScreen extends State<UpdateProfileScreen> {
     );
   }
 
-  void _onTapSignUpButton() {
+  Future<void> _onTapSignUpButton() async {
     if (_formKey.currentState!.validate()) {
-      _updateProfile();
+      Map<String, dynamic> requestBody = {
+        "email": _emailTEController.text.trim(),
+        "firstName": _firtNamelTEController.text.trim(),
+        "lastName": _lastNameTEController.text.trim(),
+        "mobile": _mobileTEController.text.trim(),
+      };
+
+      if (_passwordTEController.text.isNotEmpty) {
+        requestBody["password"] = _passwordTEController.text;
+      }
+
+      if (image != null) {
+        Uint8List imageByte = await image!.readAsBytes();
+        requestBody["photo"] = base64Encode(imageByte);
+      }
+
+      NetworkResponse response = await context
+          .read<UpdateProfileProvider>()
+          .updateProfile(requestBody: requestBody);
+
+      if (response.isSuccess) {
+        context.read<UserProvider>().updateUserData(UserModel.fromJson(requestBody));
+        snackbarMessgae(context, "User Profile update");
+      }
+      {
+        snackbarMessgae(context, response.errorMessage.toString());
+      }
     }
-  }
-
-  Future<void> _updateProfile() async {
-    final provider = context.read<UserProvider>();
-    setState(() {
-      updateInProgress = true;
-    });
-    Map<String, dynamic> requestBody = {
-      "email": _emailTEController.text.trim(),
-      "firstName": _firtNamelTEController.text.trim(),
-      "lastName": _lastNameTEController.text.trim(),
-      "mobile": _mobileTEController.text.trim(),
-    };
-
-    if (_passwordTEController.text.isNotEmpty) {
-      requestBody["password"] = _passwordTEController.text;
-    }
-
-    if (image != null) {
-      Uint8List imageByte = await image!.readAsBytes();
-      requestBody["photo"] = base64Encode(imageByte);
-    }
-
-    NetworkResponse response = await NetworkCaller.postRequest(
-      Url.updateProfileUrl,
-      body: requestBody,
-    );
-
-    if (response.isSuccess) {
-      await provider.updateUserData(UserModel.fromJson(requestBody));
-      await provider.getUserData();
-      snackbarMessgae(context, "Profile Updated");
-      setState(() {});
-    } else {
-      snackbarMessgae(context, response.errorMessage.toString());
-    }
-    setState(() {
-      updateInProgress = false;
-    });
   }
 
   Future<void> _pickImage() async {
